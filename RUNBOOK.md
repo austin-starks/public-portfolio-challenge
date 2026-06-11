@@ -143,15 +143,24 @@ Walk-forward is the entire methodology, so prove the engine before trusting a si
 3. **Engine coverage you intend to use.** If you will search with `engine_kind: sweep`, repeat
    step 1 once with `engine_kind: sweep` (tiny, 2 folds) and confirm it completes with per-fold
    OOS. GA and sweep are separate code paths; do not assume sweep works because GA did.
-4. **No-data names skip clean.** The fixed universe contains a name with no data in early folds
-   (SNDK, first trade 2025-02-24). This is the loader path for a hardcoded watchlist, which is
-   separate from point-in-time index membership; do not assume it skips cleanly because the index
-   path does. Run a tiny `backtest_portfolio` of any book over a 2022 window and confirm SNDK is
-   simply **absent**: no error, no garbage indicator value, and SNDK does NOT appear in
-   `namesWithZeroResolutionAttempts` / `namesWithRejectionsAndZeroFills` as if it were a real miss.
-   If a no-data name surfaces as a TSM-class flag, the fixed-universe loader is not skipping
-   cleanly → **STOP, report.** (The Gate-1 not-yet-listed rule tells the agent how to read the
-   audit; this check confirms the audit isn't lying.)
+4. **No-data names do not poison the audit.** The fixed universe contains a name with no data in
+   early folds (SNDK, first trade 2025-02-24). This is the loader path for a hardcoded watchlist,
+   which is separate from point-in-time index membership; do not assume it behaves like the index
+   path. Run a tiny `backtest_portfolio` of any book over a 2022 window and inspect how the dead
+   name is handled. **What is acceptable:** SNDK appearing in `namesWithZeroResolutionAttempts` /
+   `namesWithRejectionsAndZeroFills` is fine on its own, because the Gate-1 not-yet-listed rule
+   filters it out by first-trade date. A name with no data showing up in those flag lists is the
+   expected, benign case, not a defect. **What is a STOP condition:** the engine returns a real
+   error/crash on the dead name, OR it fabricates a non-null value for it (a garbage indicator
+   reading or price for a name that did not trade). A fabricated value is the actual risk here:
+   filtering by listing date removes a name from the flag lists, but it does NOT remove a phantom
+   price that has already leaked into a rank, a `weightIndicator`, or a gate computation. So the
+   pass condition is: dead name produces **no data and no value** (absent or null), which
+   first-trade-date filtering then cleanly removes. If the engine instead errors, or emits any
+   non-null number for the dead name, **STOP, report**, that is the audit lying with fake data and
+   it corrupts everything downstream. (This is S0.4's only real job: confirm the audit isn't
+   fabricating. How to _read_ a legitimately-flagged not-yet-listed name is Gate 1's job, not this
+   check's, and the two must not be confused: list membership is Gate 1, fabricated values are S0.4.)
 
 Only after S0 passes do you design anything. Record S0 outcomes in CAMPAIGN_LOG.md.
 
@@ -217,7 +226,11 @@ Evaluated on the **walk-forward OOS aggregate and per fold**, on the assembled d
      cumulative across the study, both reachable from the 19 names live across the whole span. SNDK
      (first trade 2025-02-24) is absent in every fold whose dev window starts before that date and
      becomes eligible only in the late fold(s) and the lockbox; do not read its absence as the
-     TSM-class defect.
+     TSM-class defect. (A not-yet-listed name appearing in these flag lists is expected and benign;
+     S0.4 has already confirmed the engine emits no data and no fabricated value for it, so list
+     membership here is purely a listing-date artifact to filter out, never a STOP condition. The
+     division of labor is fixed: S0.4 catches fabricated values, Gate 1 reads legitimately-flagged
+     listing-date absences. Do not halt at Gate 1 on a not-yet-listed name.)
    - `gates.namesWithRejectionsAndZeroFills` is **empty** for eligible names (no cannot-afford
      rejections with zero fills — affordability must never pick the stocks).
    - Cumulative participation ≥ 13/20 across the study; ≥ 9/20 in each OOS segment.
