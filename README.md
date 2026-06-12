@@ -1,67 +1,162 @@
+<div align="center">
+
 # Public Portfolio Challenge
 
-Build and deploy a momentum-based options strategy for a fixed 20-name watchlist on a live **$25,000** NexusTrade portfolio — using AI agents and the NexusTrade MCP server.
+**One open runbook. Real money. AI agents that have to prove it out of sample before they deploy.**
 
-**Quick start:** [Connect MCP](#3-connect-an-ai-tool-to-nexustrade) → paste [`RUNBOOK.md`](RUNBOOK.md) into a fresh AI session → tell the agent to execute top to bottom.
+<br />
 
-**Follow along in real time:** [Public Portfolio Challenge on NexusTrade](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567)
+[![Live portfolio](https://img.shields.io/badge/Live-$25K_portfolio-22c55e?style=for-the-badge)](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567)
+[![MCP](https://img.shields.io/badge/Connect-via_MCP-4bc0c0?style=for-the-badge)](https://nexustrade.io/developers)
+[![Runbook](https://img.shields.io/badge/Paste-RUNBOOK.md-c9a84c?style=for-the-badge)](RUNBOOK.md)
+[![No clone](https://img.shields.io/badge/No_code-checkout-64748b?style=for-the-badge)](#get-started)
 
-[![Public Portfolio Challenge live portfolio — click to follow live](https://nexustrade-prod.nyc3.cdn.digitaloceanspaces.com/shared-portfolios/og/69a7dc7cf99e43688fcec567/latest-v4.png)](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567)
+<br />
 
-*Hero image is generated from live portfolio data (same pipeline NexusTrade uses for shared-portfolio link previews).*
+[![Public Portfolio Challenge — live performance](https://nexustrade-prod.nyc3.cdn.digitaloceanspaces.com/shared-portfolios/og/69a7dc7cf99e43688fcec567/latest-v4.png)](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567)
 
-## What is the Public Portfolio Challenge?
+*Live portfolio card — generated from current positions. [Open the full dashboard →](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567)*
 
-In February 2026 I deposited **$25,000** into a live [Public](https://public.com) brokerage account connected to NexusTrade and made the entire thing public — every position, every fill, every AI model test, every bug, every failure. Not a paper account. Not a backtest screenshot. Real money, documented in real time.
+<br />
 
-The point is **Trade-Driven Development**: instead of building features in isolation and hoping they help traders, I use my own live book as the forcing function. Can an AI-native platform actually help someone design, validate, and run a systematic options strategy — and can I prove it in public instead of hiding behind private Robinhood gains?
+**Quick start:** [Connect MCP](#step-3--connect-your-ai-tool) · [Paste `RUNBOOK.md`](RUNBOOK.md) · **Tell the agent to execute top to bottom**
 
-The ongoing story is told as a blog series on NexusTrade:
-
-- **[The $25,000 Public Portfolio Challenge](https://nexustrade.io/blog/series/public-portfolio-challenge)** — the full series (episodes 1–9 and counting): model bakeoffs, deploy day, production bugs, week-one gains, panic sells, and everything in between.
-- **[Episode 1: I'm giving an AI access to my Public trading account](https://nexustrade.io/blog/im-giving-an-ai-access-to-my-public-trading-account-heres-how-you-can-watch-it-destroy-25000-20260228)** — where it started: why $25k, why Public, why total transparency, and how to follow the live portfolio on NexusTrade.
-
-**This repo is different from the blog.** The series documents *my* live run. This repo publishes the **runbook** — the exact agent brief I use to run a rigorous walk-forward validation campaign (multi-fold out-of-sample testing, a held-out lockbox, deploy gates) and push a strategy live through the NexusTrade MCP server. Fork it, paste [`RUNBOOK.md`](RUNBOOK.md) into your own AI session, and run the same discipline on your own idea.
-
-**No code checkout is required** — everything runs through MCP tools once you're connected.
+</div>
 
 ---
 
-## Setup
+## Contents
 
-### 1. Go to the Developers page
+- [What is this?](#what-is-this)
+- [What this repo gives you](#what-this-repo-gives-you)
+- [How the runbook works](#how-the-runbook-works)
+- [What's inside](#whats-inside)
+- [Get started](#get-started)
+- [More links](#more-links)
 
-Open **[https://nexustrade.io/developers](https://nexustrade.io/developers)** in your browser.
+---
 
-[![NexusTrade Developers page with MCP URL and Connect an AI tool section — click to open](https://nexustrade-prod.nyc3.cdn.digitaloceanspaces.com/Blog/PublicPortfolioChallenge/setup-developers-mcp-jun12.png)](https://nexustrade.io/developers)
+## What is this?
 
-### 2. Create a free account
+In February 2026 I deposited **$25,000** into a live [Public](https://public.com) brokerage account on NexusTrade and made the entire book public — every position, every fill, every model test, every bug, every failure.
 
-Sign up for a free NexusTrade account if you don't already have one. You'll need it to authorize the MCP connection and access portfolios, backtests, and live trading tools.
+Not paper. Not a backtest screenshot. **Real money, documented in real time.**
 
-[![Join NexusTrade signup page — click to create a free account](https://nexustrade-prod.nyc3.cdn.digitaloceanspaces.com/Blog/PublicPortfolioChallenge/setup-signup-jun12.png)](https://nexustrade.io/register)
+The live story is a blog series:
 
-### 3. Connect an AI tool to NexusTrade
+| | |
+| --- | --- |
+| **[Full series →](https://nexustrade.io/blog/series/public-portfolio-challenge)** | Nine episodes and counting: model bakeoffs, deploy day, production bugs, week-one gains, panic sells, engine rewrites. |
+| **[Episode 1 →](https://nexustrade.io/blog/im-giving-an-ai-access-to-my-public-trading-account-heres-how-you-can-watch-it-destroy-25000-20260228)** | Where it started — why $25k, why Public, why total transparency. |
 
-The recommended path is **OAuth** — no API keys to copy, rotate, or leak. Paste the MCP URL into your client and sign in once in the browser when prompted.
+**This repo is the open playbook.** The blog is my run. The runbook is yours.
 
-**MCP URL:**
+---
+
+## What this repo gives you
+
+<table>
+<tr>
+<td width="33%" valign="top">
+
+### No install
+
+Connect the NexusTrade MCP server to Cursor, Claude, or any OAuth-capable client. No repo checkout. No API keys to rotate (OAuth is the default path).
+
+</td>
+<td width="33%" valign="top">
+
+### One prompt
+
+[`RUNBOOK.md`](RUNBOOK.md) is a self-contained agent brief — paste it into a fresh session and let the agent execute. It prescribes *what* must be true, never *how* to achieve it.
+
+</td>
+<td width="33%" valign="top">
+
+### Real rigor
+
+Walk-forward validation, a held-out lockbox, deploy gates, and capital-posture rules. A high in-sample backtest number is never the headline.
+
+</td>
+</tr>
+</table>
+
+---
+
+## How the runbook works
+
+The campaign is built around one idea: **out-of-sample performance is the only result that counts.**
+
+```mermaid
+flowchart LR
+  A["🔍 Search<br/><small>backtests & optimization</small>"] --> B["✓ Certify<br/><small>walk-forward folds</small>"]
+  B --> C["🔒 Lockbox<br/><small>single-touch confirm</small>"]
+  C --> D["🚀 Deploy<br/><small>live portfolio</small>"]
+```
+
+| Layer | Job |
+| --- | --- |
+| **Search** | Invent and tune candidate strategies fast — variants, sweeps, backtests. |
+| **Certify** | Walk-forward: each fold optimizes in-sample, scores on held-out OOS the optimizer never saw. |
+| **Lockbox** | A final untouched window. One touch. No peeking. |
+| **Deploy** | Clone to a live portfolio, parity-check, attach monitoring. |
+
+Fixed by the runbook: a 20-name watchlist, $25,000 capital, the fold calendar, the gates, the lockbox rules, and the deploy procedure. **Yours to design:** signals, structures, deltas, exits, sizing — anything that clears the gates is valid.
+
+<details>
+<summary><strong>The watchlist (20 names, frozen)</strong></summary>
+
+<br />
+
+`ANET` · `DUOL` · `HOOD` · `LLY` · `GS` · `META` · `TSM` · `AVGO` · `XOM` · `COP` · `OSCR` · `AMAT` · `ADI` · `DDOG` · `OKTA` · `NET` · `APP` · `GLD` · `MU` · `SNDK`
+
+</details>
+
+---
+
+## What's inside
+
+| File | What it is |
+| --- | --- |
+| [`RUNBOOK.md`](RUNBOOK.md) | **The whole thing.** Full agent brief — paste into a fresh MCP session and execute top to bottom. |
+| [`CAMPAIGN_LOG.md`](CAMPAIGN_LOG.md) | Raw operator log from a live run — gates, failures, overrides, artifact IDs. Updated as the campaign progresses. |
+
+---
+
+## Get started
+
+### Step 1 — Developers page
+
+Open **[nexustrade.io/developers](https://nexustrade.io/developers)**.
+
+[![NexusTrade Developers — MCP URL and Connect an AI tool](https://nexustrade-prod.nyc3.cdn.digitaloceanspaces.com/Blog/PublicPortfolioChallenge/setup-developers-mcp-jun12.png)](https://nexustrade.io/developers)
+
+### Step 2 — Create a free account
+
+You'll need a NexusTrade account to authorize MCP and access portfolios, backtests, and live trading tools.
+
+[![Join NexusTrade](https://nexustrade-prod.nyc3.cdn.digitaloceanspaces.com/Blog/PublicPortfolioChallenge/setup-signup-jun12.png)](https://nexustrade.io/register)
+
+### Step 3 — Connect your AI tool
+
+**Recommended: OAuth.** No keys to copy, rotate, or leak. Sign in once in the browser when your client first calls a NexusTrade tool.
 
 ```
 https://nexustrade.io/api/mcp
 ```
 
-#### Cursor (recommended)
+#### Cursor *(recommended)*
 
 1. On the [Developers page](https://nexustrade.io/developers), expand **API Keys**.
 2. Under **Connect an AI tool to NexusTrade**, click **Add to Cursor**.
-3. Cursor opens and registers the server. OAuth runs automatically the first time you use a NexusTrade tool.
+3. OAuth runs automatically on first tool use.
 
-[![Authorize Cursor to connect to NexusTrade via MCP](https://nexustrade-prod.nyc3.cdn.digitaloceanspaces.com/Blog/PublicPortfolioChallenge/setup-oauth-authorize-cursor-jun12.png)](https://nexustrade.io/developers)
+[![Authorize Cursor → NexusTrade MCP](https://nexustrade-prod.nyc3.cdn.digitaloceanspaces.com/Blog/PublicPortfolioChallenge/setup-oauth-authorize-cursor-jun12.png)](https://nexustrade.io/developers)
 
-[![Connected to Cursor — switch back to start using NexusTrade](https://nexustrade-prod.nyc3.cdn.digitaloceanspaces.com/Blog/PublicPortfolioChallenge/setup-oauth-connected-cursor-jun12.png)](https://nexustrade.io/developers)
+[![Connected to Cursor](https://nexustrade-prod.nyc3.cdn.digitaloceanspaces.com/Blog/PublicPortfolioChallenge/setup-oauth-connected-cursor-jun12.png)](https://nexustrade.io/developers)
 
-Or add it manually in Cursor Settings → MCP:
+<details>
+<summary><strong>Manual Cursor config</strong></summary>
 
 ```json
 {
@@ -73,50 +168,67 @@ Or add it manually in Cursor Settings → MCP:
 }
 ```
 
-#### Claude Desktop / Claude Code
+</details>
 
-On the Developers page, click **Copy install command** under **Claude Desktop / Code**, then run it in your terminal. Claude runs the OAuth flow on the first tool call.
+<details>
+<summary><strong>Claude Desktop / Claude Code</strong></summary>
 
-Example (if configuring manually):
+Click **Copy install command** on the Developers page, or:
 
 ```bash
 claude mcp add nexustrade --transport http https://nexustrade.io/api/mcp
 ```
 
-#### VS Code
+</details>
 
-Click **Add to VS Code** on the Developers page. OAuth runs on first tool call.
+<details>
+<summary><strong>VS Code, ChatGPT, Windsurf, Zed, and other MCP clients</strong></summary>
 
-#### Other MCP clients
+Use **Add to VS Code** on the Developers page, or paste the MCP URL into your client's connector settings. OAuth 2.1 discovery works the same everywhere.
 
-Using ChatGPT, Claude.ai, Windsurf, Zed, or another MCP client? Copy the URL above into that tool's connector settings — OAuth runs the same way. Works with any MCP client that supports OAuth 2.1 discovery.
+</details>
 
-#### Advanced: API keys
+<details>
+<summary><strong>Advanced: API keys</strong></summary>
 
-For scripts or tools that don't support OAuth, expand **Advanced: API Keys** on the Developers page, create a key, and pass it in the `Authorization` header. See the [API Reference](https://nexustrade.io/docs/api-reference/overview) for REST usage.
+For scripts without OAuth support: expand **Advanced: API Keys** on the Developers page and pass the key in the `Authorization` header. See the [API Reference](https://nexustrade.io/docs/api-reference/overview).
 
-### 4. Run the challenge
+</details>
 
-Open a fresh AI session with the NexusTrade MCP server connected. Open [`RUNBOOK.md`](RUNBOOK.md), paste the whole file into the chat, and tell the agent to execute it top to bottom.
+### Step 4 — Run the challenge
 
-Optional: track progress in [`CAMPAIGN_LOG.md`](CAMPAIGN_LOG.md).
+1. Open a **fresh** AI session with NexusTrade MCP connected.
+2. Open [`RUNBOOK.md`](RUNBOOK.md) and paste the **entire file** into the chat.
+3. Tell the agent: **execute top to bottom. Do not ask clarifying questions.**
 
----
-
-## Repo contents
-
-| File | Purpose |
-| ---- | ------- |
-| [`RUNBOOK.md`](RUNBOOK.md) | Full agent brief — paste into a fresh MCP session |
-| [`CAMPAIGN_LOG.md`](CAMPAIGN_LOG.md) | Raw operator log from a live run — updated as the campaign progresses |
+Optional: log your run in [`CAMPAIGN_LOG.md`](CAMPAIGN_LOG.md).
 
 ---
 
-## Links
+## More links
 
-- [Public Portfolio Challenge (live portfolio)](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567) — positions and P&L in real time
-- [Blog series](https://nexustrade.io/blog/series/public-portfolio-challenge) — the full documented journey
-- [Episode 1 — how the challenge began](https://nexustrade.io/blog/im-giving-an-ai-access-to-my-public-trading-account-heres-how-you-can-watch-it-destroy-25000-20260228)
-- [NexusTrade Developers](https://nexustrade.io/developers) — MCP setup and API keys
-- [MCP Tools Reference](https://nexustrade.io/docs/api-reference/mcp-tools-utility)
-- [API Overview](https://nexustrade.io/docs/api-reference/overview)
+| | |
+| --- | --- |
+| [Live portfolio](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567) | Positions and P&L in real time |
+| [Blog series](https://nexustrade.io/blog/series/public-portfolio-challenge) | The full documented journey |
+| [Episode 1](https://nexustrade.io/blog/im-giving-an-ai-access-to-my-public-trading-account-heres-how-you-can-watch-it-destroy-25000-20260228) | How the challenge began |
+| [Developers](https://nexustrade.io/developers) | MCP setup |
+| [MCP tools reference](https://nexustrade.io/docs/api-reference/mcp-tools-utility) | Every tool the runbook can call |
+| [API overview](https://nexustrade.io/docs/api-reference/overview) | REST + auth |
+
+---
+
+<div align="center">
+
+<br />
+
+**Fork it. Paste the runbook. Run the same discipline on your own idea.**
+
+If it survives walk-forward and the lockbox, deploy it. If it doesn't, you found that out before risking a dollar.
+
+<br />
+
+[![NexusTrade](https://img.shields.io/badge/Built_on-NexusTrade-4bc0c0?style=flat-square)](https://nexustrade.io)
+[![Follow live](https://img.shields.io/badge/Follow-live_P&L-22c55e?style=flat-square)](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567)
+
+</div>
