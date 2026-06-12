@@ -4,6 +4,8 @@ Build and deploy a momentum-based options strategy for a fixed 20-name watchlist
 
 **Follow along in real time:** [Public Portfolio Challenge on NexusTrade](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567)
 
+![Public Portfolio Challenge live dashboard](https://nexustrade-prod.nyc3.cdn.digitaloceanspaces.com/Blog/PublicPortfolioChallenge/public-portfolio-dashboard-may15.png)
+
 This repo contains the runbook and campaign log. **No code checkout is required to execute the challenge** — everything runs through MCP tools once you're connected.
 
 ---
@@ -14,9 +16,13 @@ This repo contains the runbook and campaign log. **No code checkout is required 
 
 Open **[https://nexustrade.io/developers](https://nexustrade.io/developers)** in your browser.
 
+![NexusTrade Developers page with MCP URL and Connect an AI tool section](https://nexustrade-prod.nyc3.cdn.digitaloceanspaces.com/Blog/PublicPortfolioChallenge/setup-developers-mcp-jun12.png)
+
 ### 2. Create a free account
 
 Sign up for a free NexusTrade account if you don't already have one. You'll need it to authorize the MCP connection and access portfolios, backtests, and live trading tools.
+
+![Join NexusTrade signup page](https://nexustrade-prod.nyc3.cdn.digitaloceanspaces.com/Blog/PublicPortfolioChallenge/setup-signup-jun12.png)
 
 ### 3. Connect an AI tool to NexusTrade
 
@@ -33,6 +39,10 @@ https://nexustrade.io/api/mcp
 1. On the [Developers page](https://nexustrade.io/developers), expand **API Keys**.
 2. Under **Connect an AI tool to NexusTrade**, click **Add to Cursor**.
 3. Cursor opens and registers the server. OAuth runs automatically the first time you use a NexusTrade tool.
+
+![Authorize Cursor to connect to NexusTrade via MCP](https://nexustrade-prod.nyc3.cdn.digitaloceanspaces.com/Blog/PublicPortfolioChallenge/setup-oauth-authorize-cursor-jun12.png)
+
+![Connected to Cursor — switch back to start using NexusTrade](https://nexustrade-prod.nyc3.cdn.digitaloceanspaces.com/Blog/PublicPortfolioChallenge/setup-oauth-connected-cursor-jun12.png)
 
 Or add it manually in Cursor Settings → MCP:
 
