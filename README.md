@@ -6,7 +6,20 @@ Build and deploy a momentum-based options strategy for a fixed 20-name watchlist
 
 ![Public Portfolio Challenge live dashboard](https://nexustrade-prod.nyc3.cdn.digitaloceanspaces.com/Blog/PublicPortfolioChallenge/public-portfolio-dashboard-may15.png)
 
-This repo contains the runbook and campaign log. **No code checkout is required to execute the challenge** — everything runs through MCP tools once you're connected.
+## What is the Public Portfolio Challenge?
+
+In February 2026 I deposited **$25,000** into a live [Public](https://public.com) brokerage account connected to NexusTrade and made the entire thing public — every position, every fill, every AI model test, every bug, every failure. Not a paper account. Not a backtest screenshot. Real money, documented in real time.
+
+The point is **Trade-Driven Development**: instead of building features in isolation and hoping they help traders, I use my own live book as the forcing function. Can an AI-native platform actually help someone design, validate, and run a systematic options strategy — and can I prove it in public instead of hiding behind private Robinhood gains?
+
+The ongoing story is told as a blog series on NexusTrade:
+
+- **[The $25,000 Public Portfolio Challenge](https://nexustrade.io/blog/series/public-portfolio-challenge)** — the full series (episodes 1–9 and counting): model bakeoffs, deploy day, production bugs, week-one gains, panic sells, and everything in between.
+- **[Episode 1: I'm giving an AI access to my Public trading account](https://nexustrade.io/blog/im-giving-an-ai-access-to-my-public-trading-account-heres-how-you-can-watch-it-destroy-25000-20260228)** — where it started: why $25k, why Public, why total transparency, and how to follow the live portfolio on NexusTrade.
+
+**This repo is different from the blog.** The series documents *my* live run. This repo publishes the **runbook** — the exact agent brief I use to run a rigorous walk-forward validation campaign (multi-fold out-of-sample testing, a held-out lockbox, deploy gates) and push a strategy live through the NexusTrade MCP server. Fork it, paste [`RUNBOOK.md`](RUNBOOK.md) into your own AI session, and run the same discipline on your own idea.
+
+**No code checkout is required** — everything runs through MCP tools once you're connected.
 
 ---
 
@@ -97,7 +110,9 @@ Optional: track progress in [`CAMPAIGN_LOG.md`](CAMPAIGN_LOG.md).
 
 ## Links
 
-- [Public Portfolio Challenge (live)](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567) — follow positions and performance in real time
+- [Public Portfolio Challenge (live portfolio)](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567) — positions and P&L in real time
+- [Blog series](https://nexustrade.io/blog/series/public-portfolio-challenge) — the full documented journey
+- [Episode 1 — how the challenge began](https://nexustrade.io/blog/im-giving-an-ai-access-to-my-public-trading-account-heres-how-you-can-watch-it-destroy-25000-20260228)
 - [NexusTrade Developers](https://nexustrade.io/developers) — MCP setup and API keys
 - [MCP Tools Reference](https://nexustrade.io/docs/api-reference/mcp-tools-utility)
 - [API Overview](https://nexustrade.io/docs/api-reference/overview)
