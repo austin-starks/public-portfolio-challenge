@@ -8,7 +8,7 @@
 
 [![Live portfolio](https://img.shields.io/badge/Live-$25K_portfolio-22c55e?style=for-the-badge)](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567)
 [![MCP](https://img.shields.io/badge/Connect-via_MCP-4bc0c0?style=for-the-badge)](https://nexustrade.io/developers)
-[![Runbook](https://img.shields.io/badge/Paste-RUNBOOK.md-c9a84c?style=for-the-badge)](RUNBOOK.md)
+[![Runbook](https://img.shields.io/badge/Paste-RUNBOOK.md-c9a84c?style=for-the-badge)](episode-10/RUNBOOK.md)
 [![No clone](https://img.shields.io/badge/No_code-checkout-64748b?style=for-the-badge)](#get-started)
 
 <br />
@@ -19,7 +19,7 @@
 
 <br />
 
-**Quick start:** [Connect MCP](#step-3--connect-your-ai-tool) · [Paste `RUNBOOK.md`](RUNBOOK.md) · **Tell the agent to execute top to bottom**
+**Quick start:** [Connect MCP](#step-3--connect-your-ai-tool) · [Paste `episode-10/RUNBOOK.md`](episode-10/RUNBOOK.md) · **Tell the agent to execute top to bottom**
 
 </div>
 
@@ -46,7 +46,7 @@ The live story is a blog series:
 
 | | |
 | --- | --- |
-| **[Full series →](https://nexustrade.io/blog/series/public-portfolio-challenge)** | Nine episodes and counting: model bakeoffs, deploy day, production bugs, week-one gains, panic sells, engine rewrites. |
+| **[Full series →](https://nexustrade.io/blog/series/public-portfolio-challenge)** | Ten episodes and counting: model bakeoffs, deploy day, production bugs, week-one gains, panic sells, engine rewrites, and the open runbook. |
 | **[Episode 1 →](https://nexustrade.io/blog/im-giving-an-ai-access-to-my-public-trading-account-heres-how-you-can-watch-it-destroy-25000-20260228)** | Where it started — why $25k, why Public, why total transparency. |
 
 **This repo is the open playbook.** The blog is my run. The runbook is yours.
@@ -68,7 +68,7 @@ Connect the NexusTrade MCP server to Cursor, Claude, or any OAuth-capable client
 
 ### One prompt
 
-[`RUNBOOK.md`](RUNBOOK.md) is a self-contained agent brief — paste it into a fresh session and let the agent execute. It prescribes *what* must be true, never *how* to achieve it.
+[`episode-10/RUNBOOK.md`](episode-10/RUNBOOK.md) is a self-contained agent brief — paste it into a fresh session and let the agent execute. It prescribes *what* must be true, never *how* to achieve it.
 
 </td>
 <td width="33%" valign="top">
@@ -116,10 +116,20 @@ Fixed by the runbook: a 20-name watchlist, $25,000 capital, the fold calendar, t
 
 ## What's inside
 
+Each episode is a self-contained folder: the **runbook** to paste, plus the **campaign log** from a live operator run.
+
+```
+episode-10/
+├── RUNBOOK.md        ← paste this into a fresh MCP session
+└── CAMPAIGN_LOG.md   ← raw log from the Episode 10 run (Fable 5, in progress)
+```
+
 | File | What it is |
 | --- | --- |
-| [`RUNBOOK.md`](RUNBOOK.md) | **The whole thing.** Full agent brief — paste into a fresh MCP session and execute top to bottom. |
-| [`CAMPAIGN_LOG.md`](CAMPAIGN_LOG.md) | Raw operator log from a live run — gates, failures, overrides, artifact IDs. Updated as the campaign progresses. |
+| [`episode-10/RUNBOOK.md`](episode-10/RUNBOOK.md) | **Start here.** Full agent brief — walk-forward validation, lockbox, deploy gates. Paste and execute top to bottom. |
+| [`episode-10/CAMPAIGN_LOG.md`](episode-10/CAMPAIGN_LOG.md) | Raw operator log from the live Episode 10 run — S0 engine sanity, gate results, sweep vs GA, artifact IDs. Updated as the campaign progresses. |
+
+Future episodes get their own folders (`episode-11/`, …) when the runbook or campaign parameters change materially.
 
 ---
 
@@ -198,10 +208,10 @@ For scripts without OAuth support: expand **Advanced: API Keys** on the Develope
 ### Step 4 — Run the challenge
 
 1. Open a **fresh** AI session with NexusTrade MCP connected.
-2. Open [`RUNBOOK.md`](RUNBOOK.md) and paste the **entire file** into the chat.
+2. Open [`episode-10/RUNBOOK.md`](episode-10/RUNBOOK.md) and paste the **entire file** into the chat.
 3. Tell the agent: **execute top to bottom. Do not ask clarifying questions.**
 
-Optional: log your run in [`CAMPAIGN_LOG.md`](CAMPAIGN_LOG.md).
+Optional: log your run in [`episode-10/CAMPAIGN_LOG.md`](episode-10/CAMPAIGN_LOG.md).
 
 ---
 
