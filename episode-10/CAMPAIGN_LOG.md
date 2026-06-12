@@ -3,6 +3,34 @@
 Run date: 2026-06-11
 Operator: Claude (Fable 5) via NexusTrade MCP, executing RUNBOOK.md top to bottom.
 
+> **Outcome (2026-06-12):** a sweep-certified momentum-LEAP book is live on the
+> [$25k public portfolio](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567). Eight frozen gates, three
+> optimizer arms, two engine-fix cycles, one honest "no deploy," one owner override, and a final head-to-head later,
+> the deployed strategy is the only candidate whose every certified walk-forward fold and every test window finished
+> positive: certified OOS mean **+88.3%** (worst fold +21.3%), five test windows **+18% to +138%**, worst drawdown
+> **25.5%** against a 55% ceiling. Cloned onto the live book with a bit-exact Gate-7 reproduction; Gate-8 live parity
+> pending the first evaluator tick.
+
+[![Deployed sweep winner — five test windows vs SPY](https://nexustrade-prod.nyc3.cdn.digitaloceanspaces.com/Blog/PublicPortfolioChallenge/ep10-sweep-winner-five-windows-jun12.png)](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567)
+
+*The deployed book (`6a2c044d…bacf6`) backtested over all five test windows, blue vs SPY gray. The first three are
+in-sample-adjacent for this genome; the last two — the true out-of-sample fold and the 2026 burnout — are the honest
+ones. [Open the live dashboard →](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567)*
+
+## Contents
+
+- [Fixed campaign parameters (frozen)](#fixed-campaign-parameters-frozen)
+- [Stage S0 — engine sanity](#stage-s0--engine-sanity) — two STOP-condition halts, two engine fixes, then an exact pass
+- [Stage S1 — baselines](#stage-s1--baselines-in-progress-2026-06-12) — the bars every candidate must clear
+- [Search layer — kill-log](#search-layer-2026-06-12--kill-log-and-finalist-selection) — 16 variants, what died and why
+- [Final outcome: NO DEPLOY](#final-campaign-outcome-2026-06-12-no-deploy--certification-failed-honestly) — certification failed honestly
+- [Owner override + deploy of v16](#owner-override--deploy-2026-06-12)
+- [Phase 2 — doing the optimization properly](#phase-2-2026-06-12-owner-directed-wf-sweep--portfolio-selection--wf-ga--burnout--redeploy-decision)
+- [The sweep-vs-GA answer](#cert-3e-results-sweep-arm-complete--the-sweep-vs-ga-answer)
+- [CERT #5 — GA on the winner](#cert-5--wf-ga-seeded-from-the-sweep-winner-2026-06-12)
+- [DEPLOY #2 — the sweep winner goes live](#deploy-2--sweep-winner-to-the-live-book-2026-06-12)
+- [MCP issues for the owner](#mcp-issues-observed-phase-2-for-the-owner)
+
 ## Fixed campaign parameters (frozen)
 
 - Universe (20): ANET, DUOL, HOOD, LLY, GS, META, TSM, AVGO, XOM, COP, OSCR, AMAT, ADI, DDOG, OKTA, NET, APP, GLD, MU, SNDK
@@ -13,6 +41,34 @@ Operator: Claude (Fable 5) via NexusTrade MCP, executing RUNBOOK.md top to botto
 - fold_count: 4, anchored, mode: validation, oos_width_days: 252
 - baseline_symbol: SPY; live deploy target: 69a7dc7acdb6bf6a4681d36c
 - Gates 1–8 + lockbox pass conditions: as written in RUNBOOK.md, frozen at S0. No changes permitted.
+
+The whole campaign hangs on this calendar — every optimizer trains and validates strictly left of its fold's OOS
+window, and the lockbox is opened exactly once:
+
+```mermaid
+gantt
+    title Walk-forward calendar — 4 anchored folds + lockbox
+    dateFormat YYYY-MM-DD
+    axisFormat %b %y
+    section Fold 0
+    Train       :f0t, 2022-01-01, 2023-01-14
+    Validation  :f0v, 2023-01-28, 2023-05-05
+    OOS         :crit, f0o, 2023-05-05, 2024-01-12
+    section Fold 1
+    Train       :f1t, 2022-01-01, 2023-08-03
+    Validation  :f1v, 2023-08-17, 2024-01-12
+    OOS         :crit, f1o, 2024-01-12, 2024-09-20
+    section Fold 2
+    Train       :f2t, 2022-01-01, 2024-02-21
+    Validation  :f2v, 2024-03-06, 2024-09-20
+    OOS         :crit, f2o, 2024-09-20, 2025-05-30
+    section Fold 3
+    Train       :f3t, 2022-01-01, 2024-09-09
+    Validation  :f3v, 2024-09-23, 2025-05-30
+    OOS         :crit, f3o, 2025-05-30, 2026-02-06
+    section Lockbox
+    Single touch :active, lb, 2026-02-05, 2026-06-11
+```
 
 ## Stage S0 — Engine sanity
 
@@ -551,6 +607,12 @@ validation luck, not alpha; the deterministic grid remains the only optimizer he
 transfers. No candidate from this study merits burnout: the fold-3 winner (the deploy-relevant one) is an OOS loser.
 
 **CERT #5 verdict: do not GA-polish the sweep winner. The deploy candidate stands: `6a2c044d99fc925d9b7bacf6` as-is.**
+
+![Certified walk-forward OOS returns by optimizer](https://nexustrade-prod.nyc3.cdn.digitaloceanspaces.com/Blog/PublicPortfolioChallenge/ep10-sweep-vs-ga-oos-jun12.png)
+
+*The three optimizer arms on the same frozen calendar. The deterministic sweep (blue) is the only one with no
+negative fold; both GA arms (orange, red) buy taller peaks at the cost of catastrophic tails — even when seeded from
+the proven winner.*
 
 ### DEPLOY #2 — sweep winner to the live book (2026-06-12)
 
