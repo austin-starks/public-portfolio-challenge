@@ -17,6 +17,7 @@ Operator: Claude (Fable 5) via NexusTrade MCP, executing RUNBOOK.md top to botto
 ## Stage S0 — Engine sanity
 
 ### S0.1 Chat-portfolio walk-forward support (GA)
+
 - Trivial chat book created: "S0 Sanity — SPY SMA50 trivial book", chatPortfolioId `6a2b43f4e541b1865c6e31fb`
   (Buy SPY 100% BP when Price>SMA50; Sell all when Price<SMA50).
 - Tiny study launched: mode validation, fold_count 2, population_size 3, num_generations 1, span 2022-01-01 → 2026-02-05.
@@ -27,6 +28,7 @@ Operator: Claude (Fable 5) via NexusTrade MCP, executing RUNBOOK.md top to botto
 ### S0.2 OOS fidelity + window disjointness — **FAIL (STOP condition)**
 
 **Window disjointness: PASS.** Asserted from returned date ranges, both folds:
+
 - Fold 0: train 2022-01-01→2024-02-20 | embargo 2024-02-21→2024-03-05 | val 2024-03-06→2024-09-19 | OOS 2024-09-20→2025-05-29.
 - Fold 1: train 2022-01-01→2024-09-08 | embargo 2024-09-09→2024-09-22 | val 2024-09-23→2025-05-29 | OOS 2025-05-30→2026-02-05.
 - All pairwise intersections empty; OOS.start > validation.end in both folds. Declared calendar is clean.
@@ -35,17 +37,18 @@ Operator: Claude (Fable 5) via NexusTrade MCP, executing RUNBOOK.md top to botto
 chatPortfolio `6a2b44517b36e0f7766b5a39` (individual 6a2b440d60a3f5212453f064; training AND validation stats match the
 fold's reported stats to all printed digits, so this is the fold's evaluated genome).
 
-| Metric | Fold oosStatistics | Manual backtest, exact OOS window (`6a2b44bf8994c9832cda19f5`) |
-|---|---|---|
-| percentChange | **16.9914%** | **16.1990%** (Δ = 79 bps) |
-| sortinoRatio | **2.3112** | **2.1796** |
-| sharpeRatio | 1.7157 | 1.6198 |
-| maxDrawdown | 4.97274% | 4.97271% |
-| totalFees | 24.95542359506551 | 24.95542359506551 (exact) |
-| dollarsSold | 0 | 0 |
-| totalDividends | 152.2140 | 151.1824 |
+| Metric         | Fold oosStatistics | Manual backtest, exact OOS window (`6a2b44bf8994c9832cda19f5`) |
+| -------------- | ------------------ | -------------------------------------------------------------- |
+| percentChange  | **16.9914%**       | **16.1990%** (Δ = 79 bps)                                      |
+| sortinoRatio   | **2.3112**         | **2.1796**                                                     |
+| sharpeRatio    | 1.7157             | 1.6198                                                         |
+| maxDrawdown    | 4.97274%           | 4.97271%                                                       |
+| totalFees      | 24.95542359506551  | 24.95542359506551 (exact)                                      |
+| dollarsSold    | 0                  | 0                                                              |
+| totalDividends | 152.2140           | 151.1824                                                       |
 
 Diagnosis (boundary-shift experiments, same book, same end date):
+
 - start 2025-05-30 → return 16.199%, dividends 151.182
 - start 2025-05-29 → return 16.499%, dividends 151.573
 - start 2025-05-28 → return 17.533%, dividends 152.919
@@ -68,9 +71,11 @@ distortion is bounded by ~one day of underlying drift per fold — small, but it
 biases every fold's headline OOS number, which is the campaign's only deliverable metric.
 
 ### S0.3 Sweep engine coverage
+
 - Not run — moot after S0.2 hard fail.
 
 ### S0.4 No-data name handling (SNDK in 2022 window) — **PASS**
+
 - Probe book "S0.4 Probe — watchlist dead-name handling" (`6a2b44287b36e0f7766b59f2`): RebalanceOption over the fixed
   20-name watchlist, 14d cadence, ATM call + 10%-wide vertical ladder, 180–365 DTE; backtest 2022-01-03→2022-06-30
   with events (`6a2b44317b36e0f7766b59f8`, COMPLETE, no error).
@@ -83,21 +88,26 @@ biases every fold's headline OOS number, which is the campaign's only deliverabl
   - Frequent `noDteWindow` rejections (no 180–365 DTE listings) on ADI/ANET/XOM/OSCR/AVGO in 2022.
 
 ## Stage S1 — Baselines
+
 - Not run — campaign halted at S0.2 per runbook (no design, no baselines, no search, no deploy).
 - Lockbox (2026-02-05 → 2026-06-11) untouched by any tool. Not burned.
 
 ## Stage S0 RERUN — 2026-06-12, after owner reported engine fix
 
 ### S0.1 rerun — PASS
+
 - Tiny GA study on trivial book `6a2b43f4e541b1865c6e31fb`: study `6a2b4bd02777a3ceeff48f2f`, COMPLETE, per-fold OOS + aggregate present. Fold calendar identical to pre-fix; disjointness re-asserted: PASS.
 
 ### S0.3 — NOT REQUIRED (decision logged)
+
 - WF `engine_kind: sweep` requires a hand-authored sweepConfig (launcher error: "Sweep walk-forward study missing sweepConfig"). Decision: this campaign certifies with GA walk-forward only; the search layer uses standalone `systematic_sweep`/`optimize_portfolio` (separate code path, results read from its own leaderboard, not used for certification). Therefore the S0.3 WF-sweep check is out of scope per its own precondition ("if you will search with engine_kind: sweep").
 
 ### S0.4 rerun — PASS
+
 - Probe backtest `6a2b4beb2777a3ceeff48f5e` (2022-01-03→2022-06-30, events on): statistics bit-identical to pre-fix run; breadth snapshot identical; SNDK still zero attempts/zero events/no fabricated values.
 
 ### S0.2 rerun — **FAIL again, but defect now precisely localized to the STANDALONE backtest path**
+
 - New probe: "S0.2 Fidelity probe — always-in SPY" `6a2b4c4d2eb014e4468c214a` (buy condition robust to GA mutation → winner always-in). Study `6a2b4c602777a3ceeff48fdf`; fold-1 winner materialized as `6a2b4c7a2777a3ceeff4900f`.
 - Fold 1 OOS (2025-05-30→2026-02-05): return 16.9089%, Sortino 2.2961, maxDD 5.00032%, dividends 151.590.
 - Manual same-window backtest `6a2b4c86874912fb4314c32b`: return 16.2301%, Sortino 2.1831, maxDD 5.00031%, dividends 150.706. **Δ = 68 bps return — not within rounding.**
@@ -164,13 +174,13 @@ F3 2025-05-30→2026-02-05 (each ≈ 8.4 months → Baseline-B Sortino compariso
 
 ### S1 BASELINE BARS (as-authored books; candidate aggregate must beat A and SPY by ≥ +10pp, beat B outright)
 
-| Fold | Window | A return | A Sortino | A maxDD | B return | B Sortino | B maxDD | B names/20 | SPY return |
-|---|---|---|---|---|---|---|---|---|---|
-| F0 | 2023-05-05→2024-01-11 | +44.27% | 3.599 | 10.22% | +81.66% | 2.635 | 33.86% | 16 ✓ | +16.8% |
-| F1 | 2024-01-12→2024-09-19 | +41.46% | 2.625 | 19.67% | +54.66% | 1.878 | 39.51% | 14 ✓ | +20.5% |
-| F2 | 2024-09-20→2025-05-29 | +31.89% | 1.667 | 34.47% | +48.45% | 1.788 | 37.68% | 10 ✓ | +4.5% |
-| F3 | 2025-05-30→2026-02-05 | +102.81% | 4.438 | 13.76% | +22.33% | 1.073 | 29.99% | 12 ✓ | +15.6% |
-| **Mean** | | **+55.11%** | 3.08 | worst 34.47% | **+51.78%** | 1.84 | worst 39.51% | all ≥9 | **+14.35%** |
+| Fold     | Window                | A return    | A Sortino | A maxDD      | B return    | B Sortino | B maxDD      | B names/20 | SPY return  |
+| -------- | --------------------- | ----------- | --------- | ------------ | ----------- | --------- | ------------ | ---------- | ----------- |
+| F0       | 2023-05-05→2024-01-11 | +44.27%     | 3.599     | 10.22%       | +81.66%     | 2.635     | 33.86%       | 16 ✓       | +16.8%      |
+| F1       | 2024-01-12→2024-09-19 | +41.46%     | 2.625     | 19.67%       | +54.66%     | 1.878     | 39.51%       | 14 ✓       | +20.5%      |
+| F2       | 2024-09-20→2025-05-29 | +31.89%     | 1.667     | 34.47%       | +48.45%     | 1.788     | 37.68%       | 10 ✓       | +4.5%       |
+| F3       | 2025-05-30→2026-02-05 | +102.81%    | 4.438     | 13.76%       | +22.33%     | 1.073     | 29.99%       | 12 ✓       | +15.6%      |
+| **Mean** |                       | **+55.11%** | 3.08      | worst 34.47% | **+51.78%** | 1.84      | worst 39.51% | all ≥9     | **+14.35%** |
 
 - Backtest IDs — A: F0 `6a2b5502d39b9224ac2d2561`, F1 `6a2b550424b4b85b24a2e5b3`, F2 `6a2b5506d39b9224ac2d258c`,
   F3 `6a2b5508955c28672f63fccf`. B: F0 `6a2b550924b4b85b24a2e5bd`, F1 `6a2b550bd39b9224ac2d2599`,
@@ -188,26 +198,27 @@ F3 2025-05-30→2026-02-05 (each ≈ 8.4 months → Baseline-B Sortino compariso
 Family: momentum LEAP rotation ("MLT"), 20-name watchlist, regime-tiered budgets, ATM-call-primary affordability ladder.
 Windows = the four official OOS segments + calendar-2022 stress. Returns are full-window backtests of fixed-parameter books.
 
-| Variant | Mechanism change | F0 | F1 | F2 | F3 | 2022 | Verdict |
-|---|---|---|---|---|---|---|---|
-| v1 `6a2b5608…2723` | anchor: top-10 rank, 45/50 budgets, TP150, BP-valve | (43.6) | — | — | — | +0.9, DD 57 | posture fail (2022 median 67) |
-| v2 `6a2b568c…e7fd` | tiered 40/20/35, cadence 21 | 52.0 | — | — | — | +6.0 | >70 days out of regime (valve has no winners to close in drawdowns) |
-| v3 `6a2b5744…29b4` | 30/15/45 + hard BP flatten | 33.0 | 5.0 | 37.5 | 18.5 | -9.9 | KILL: flatten churn destroys returns |
-| v4a `6a2b57a8…ea2e` | **wide limit 20 (no rank rotation)** | 73.4 | 14.0 | 192.8 | 52.0 | +19.4 | KEY WIN: rotation churn was the return killer; posture: 17/4/3/0 days >70 OOR |
-| v4b | TP 300 | identical to v4a | | | | | TP never reached — valve harvests first |
-| v5 `6a2b57ff…2aff` | valve 0.31/0.26 + BP hard flatten | 4.3 | -19.7 | 102.9 | -0.7 | +19.4 | KILL: BuyingPower under/over-reads (0.085 at 80% dep; 0.505 at 62%) → flatten roulette |
-| v6 `6a2b58d9…ec26` | graded BP valve + regime-scoped core, 40/12/38 | 105.3 | 64.1 | 157.5 | -9.2 | +30.5 | F1 win was BP-valve LUCK (accidental market timing); F3 killed by same noise |
-| v7 `6a2b59b2…2de7` | all-calls ladder + OGEP valve 72/82/95 | 119.4 | 77.9 | 104.4 | 8.0 | -13.2, DD 63 | OTM-call rungs too fragile; multi-change, attribution muddy |
-| v9 `6a2b5a04…ed8d` | v6 with OGEP valve 95/110/130 | 141.0 | -0.4 | 138.8 | 71.7 | -11.9 | valve never binds in F1 → rides into Aug-24 crash |
-| v10 `6a2b5a9d…03a2` | + 20 per-name SMA100 trend-break exits | 52.6 | -29.8 | 24.0 | 65.0 | +0.8 | KILL: whipsaw destruction (runbook A/B done: trend exits rejected) |
-| v11 `6a2b5aef…ef77` | v9 with **TP 100** | 88.8 | 114.5 | 142.0 | 41.2 | — | TP100 banks H1-24 gains pre-crash → F1 fixed; mean 96.6; posture fails in melt-ups (F0 med 67.7, ~100 d >70 OOR) |
-| v12 `6a2b5b76…f042` | governor 78/88/100 close-all | -13.3 | -18.9 | -65.7 | -29.7 | +10.1 | KILL: perpetual sell-low machine |
-| v13c `6a2b5c1f…3143` | quantity-limited trims (1-2 contracts/day) | -17.9 | — | — | — | — | KILL: quantity works ({type:"contracts",count:N}) but thresholds fire at dep 48-66 |
-| **v14 `6a2b5d1e24b4b85b24a2f295`** | **v11 with budgets 28/10/30** | **59.9** | **43.5** | **170.2** | **73.3** | **+49.8** | **FINALIST** — see below |
-| v15 `6a2b5db6…32d3` | v14 + 60%-band OOR harvest, 8/22 sleeves | 44.8 | -16.2 | 197.8 | 30.0 | +43.5 | KILL: +60 harvest re-amputates F1 |
-| MLT-DV `6a2b5cb1…f20c` | all-verticals (defined-value cap) 45/15/22 | 56.7 | 3.0 | 115.8 | 105.1 | — | structurally posture-capped, but F1 Sortino 0.56 < 0.9 floor |
+| Variant                            | Mechanism change                                    | F0               | F1       | F2        | F3       | 2022         | Verdict                                                                                                          |
+| ---------------------------------- | --------------------------------------------------- | ---------------- | -------- | --------- | -------- | ------------ | ---------------------------------------------------------------------------------------------------------------- |
+| v1 `6a2b5608…2723`                 | anchor: top-10 rank, 45/50 budgets, TP150, BP-valve | (43.6)           | —        | —         | —        | +0.9, DD 57  | posture fail (2022 median 67)                                                                                    |
+| v2 `6a2b568c…e7fd`                 | tiered 40/20/35, cadence 21                         | 52.0             | —        | —         | —        | +6.0         | >70 days out of regime (valve has no winners to close in drawdowns)                                              |
+| v3 `6a2b5744…29b4`                 | 30/15/45 + hard BP flatten                          | 33.0             | 5.0      | 37.5      | 18.5     | -9.9         | KILL: flatten churn destroys returns                                                                             |
+| v4a `6a2b57a8…ea2e`                | **wide limit 20 (no rank rotation)**                | 73.4             | 14.0     | 192.8     | 52.0     | +19.4        | KEY WIN: rotation churn was the return killer; posture: 17/4/3/0 days >70 OOR                                    |
+| v4b                                | TP 300                                              | identical to v4a |          |           |          |              | TP never reached — valve harvests first                                                                          |
+| v5 `6a2b57ff…2aff`                 | valve 0.31/0.26 + BP hard flatten                   | 4.3              | -19.7    | 102.9     | -0.7     | +19.4        | KILL: BuyingPower under/over-reads (0.085 at 80% dep; 0.505 at 62%) → flatten roulette                           |
+| v6 `6a2b58d9…ec26`                 | graded BP valve + regime-scoped core, 40/12/38      | 105.3            | 64.1     | 157.5     | -9.2     | +30.5        | F1 win was BP-valve LUCK (accidental market timing); F3 killed by same noise                                     |
+| v7 `6a2b59b2…2de7`                 | all-calls ladder + OGEP valve 72/82/95              | 119.4            | 77.9     | 104.4     | 8.0      | -13.2, DD 63 | OTM-call rungs too fragile; multi-change, attribution muddy                                                      |
+| v9 `6a2b5a04…ed8d`                 | v6 with OGEP valve 95/110/130                       | 141.0            | -0.4     | 138.8     | 71.7     | -11.9        | valve never binds in F1 → rides into Aug-24 crash                                                                |
+| v10 `6a2b5a9d…03a2`                | + 20 per-name SMA100 trend-break exits              | 52.6             | -29.8    | 24.0      | 65.0     | +0.8         | KILL: whipsaw destruction (runbook A/B done: trend exits rejected)                                               |
+| v11 `6a2b5aef…ef77`                | v9 with **TP 100**                                  | 88.8             | 114.5    | 142.0     | 41.2     | —            | TP100 banks H1-24 gains pre-crash → F1 fixed; mean 96.6; posture fails in melt-ups (F0 med 67.7, ~100 d >70 OOR) |
+| v12 `6a2b5b76…f042`                | governor 78/88/100 close-all                        | -13.3            | -18.9    | -65.7     | -29.7    | +10.1        | KILL: perpetual sell-low machine                                                                                 |
+| v13c `6a2b5c1f…3143`               | quantity-limited trims (1-2 contracts/day)          | -17.9            | —        | —         | —        | —            | KILL: quantity works ({type:"contracts",count:N}) but thresholds fire at dep 48-66                               |
+| **v14 `6a2b5d1e24b4b85b24a2f295`** | **v11 with budgets 28/10/30**                       | **59.9**         | **43.5** | **170.2** | **73.3** | **+49.8**    | **FINALIST** — see below                                                                                         |
+| v15 `6a2b5db6…32d3`                | v14 + 60%-band OOR harvest, 8/22 sleeves            | 44.8             | -16.2    | 197.8     | 30.0     | +43.5        | KILL: +60 harvest re-amputates F1                                                                                |
+| MLT-DV `6a2b5cb1…f20c`             | all-verticals (defined-value cap) 45/15/22          | 56.7             | 3.0      | 115.8     | 105.1    | —            | structurally posture-capped, but F1 Sortino 0.56 < 0.9 floor                                                     |
 
 Structural findings (the article's spine):
+
 1. Rank-rotation churn, not signal quality, was the dominant return destroyer; breadth-from-wide-limit fixed it (runbook was right).
 2. BuyingPower is not a cash proxy in this engine (reads 0.085–0.505 at similar true deployment) — any valve keyed on it is a randomizer.
 3. OptionPositionValue is per-position (~6-11% of NAV when book is 80% deployed) — not a book-level instrument. OGEP/deployment ratio drifts 1.0–1.7 with structure mix.
@@ -215,6 +226,7 @@ Structural findings (the article's spine):
 5. Reactive valves tight enough to guarantee zero >70%-out-of-regime days destroy the return edge (v12/v13/v15); the residual tension is intrinsic to a compounding long-options book.
 
 ### Finalist: MLT v14 (`6a2b5d1e24b4b85b24a2f295`) — fixed-parameter smoke evidence
+
 - Mechanisms: wide-limit-20 momentum queue (Filter Price>SMA150 → rank ROC126) feeding an ATM-call-first ladder
   [ATM call → ATM/+20 vert → ATM/+10 vert → ATM/+3 vert], 150-365 DTE furthest; core budget 28% (entries paused in regime);
   opportunity surge +10% (SPY<0.92×252d-high, rank ROC252, no trend filter); extreme surge +30% (SPY<0.82); exits: DTE≤45 roll,
@@ -225,21 +237,21 @@ Structural findings (the article's spine):
 - Breadth (OOS segments): 17/16/16/13 filled (≥9 each ✓); cumulative ≥13 ✓; cannot-afford-zero-fills EMPTY in all four
   (F1 lists AMAT but its 2 rejections are chain sparsity — "only one strike listed at this expiration" — not affordability; noted);
   zero-attempt names = momentum-rank budget exhaustion (by design under wide-limit), SNDK not-yet-listed except F3 (filled there ✓).
-- Posture: OOS medians 45.8/29.0/28.9/27.0 (all ≤55 ✓); F2 zero >70-out-of-regime days ✓; **F0 12 days, F1 2 days, F3 14 days
-  >70% with regime inactive (parabolic melt-up blocks Sep-Oct'23, May'24, Aug-Sep'25) — posture condition 2 NOT fully clean**;
-  2022 stress: ZERO >70-OOR days ✓ but median 62.4 > 55 (in-regime year; rule 1 is unconditional) — flagged for dev windows.
+- Posture: OOS medians 45.8/29.0/28.9/27.0 (all ≤55 ✓); F2 zero >70-out-of-regime days ✓; \*\*F0 12 days, F1 2 days, F3 14 days
+  > 70% with regime inactive (parabolic melt-up blocks Sep-Oct'23, May'24, Aug-Sep'25) — posture condition 2 NOT fully clean\*\*;
+  > 2022 stress: ZERO >70-OOR days ✓ but median 62.4 > 55 (in-regime year; rule 1 is unconditional) — flagged for dev windows.
 - Backtests: F0 `6a2b5d29955c28672f64075c` F1 `6a2b5d2b24b4b85b24a2f2b7` F2 `6a2b5d2d955c28672f640778`
   F3 `6a2b5d30d39b9224ac2d3228` 2022 `6a2b5d3224b4b85b24a2f2d0`.
 
 ### Certification attempt 1/3 — **FAIL** (study `6a2b5e02d39b9224ac2d3371`, GA pop 6 × gen 2, fitness sharpe, 327.68 tokens)
 
-| Fold | OOS return | OOS Sortino | OOS maxDD | Names traded |
-|---|---|---|---|---|
-| 0 | +4.49% | 0.349 | 17.4% | 9 |
-| 1 | +50.96% | 1.634 | 23.2% | 13 |
-| 2 | +18.38% | 1.374 | 51.9% | 14 |
-| 3 | +1057.72% | 8.268 | 32.2% | 11 |
-| Agg | mean 282.9 / **median 34.7** / min 4.5 | mean 2.91 / min 0.35 | worst 51.9 | |
+| Fold | OOS return                             | OOS Sortino          | OOS maxDD  | Names traded |
+| ---- | -------------------------------------- | -------------------- | ---------- | ------------ |
+| 0    | +4.49%                                 | 0.349                | 17.4%      | 9            |
+| 1    | +50.96%                                | 1.634                | 23.2%      | 13           |
+| 2    | +18.38%                                | 1.374                | 51.9%      | 14           |
+| 3    | +1057.72%                              | 8.268                | 32.2%      | 11           |
+| Agg  | mean 282.9 / **median 34.7** / min 4.5 | mean 2.91 / min 0.35 | worst 51.9 |              |
 
 - Gate 2 ✗: median fold (34.7) loses to A's median (42.9); only 2/4 folds beat A&SPY; fold-0 Sortino 0.349 < 0.9 floor.
 - Gate 3 ✗: aggregate carried by fold 3 (+1057% = ~93% of the mean) — the one-lucky-fold signature; winnerStableAcrossFolds false.
@@ -250,13 +262,13 @@ Structural findings (the article's spine):
 
 ### Certification attempt 2/3 — **FAIL** (study `6a2b5edbd39b9224ac2d3485`, fitness [sortino, percentChange], pop 10 × gen 3, 807.2 tokens)
 
-| Fold | OOS return | OOS Sortino | OOS maxDD | Names traded |
-|---|---|---|---|---|
-| 0 | **-41.01%** | -1.411 | 49.4% | 19 |
-| 1 | +167.52% | 3.315 | 39.0% | 19 |
-| 2 | +157.63% | 3.419 | 47.1% | 19 |
-| 3 | +937.47% | 8.028 | 33.8% | 9 |
-| Agg | mean 305.4 / median 162.6 / min -41.0 | mean 3.34 / min -1.41 | worst 49.4 | winnerStable: false |
+| Fold | OOS return                            | OOS Sortino           | OOS maxDD  | Names traded        |
+| ---- | ------------------------------------- | --------------------- | ---------- | ------------------- |
+| 0    | **-41.01%**                           | -1.411                | 49.4%      | 19                  |
+| 1    | +167.52%                              | 3.315                 | 39.0%      | 19                  |
+| 2    | +157.63%                              | 3.419                 | 47.1%      | 19                  |
+| 3    | +937.47%                              | 8.028                 | 33.8%      | 9                   |
+| Agg  | mean 305.4 / median 162.6 / min -41.0 | mean 3.34 / min -1.41 | worst 49.4 | winnerStable: false |
 
 - Gate 2 ✗ (fold-0 Sortino -1.41 < 0.9 floor; return/median/majority otherwise pass). Gate 3 ✗ (worst fold -41.0% < -15%:
   a fold blew up out of sample; winner not stable). Gate 4 ✗ (fold-0 Sortino below B floor). Gate 5 ✓.
@@ -266,6 +278,7 @@ Structural findings (the article's spine):
   full-span hindsight and the certification correctly refuses to credit them.
 
 ### Certification stopped at 2/3 attempts — decision rationale
+
 A third attempt would be another optimizer-knob tweak on the same idea, i.e. tuning toward the bar — exactly what the
 runbook forbids. Both failures agree on the diagnosis (bear-only dev window → non-generalizing parameterization), and
 Gate 6 (posture) is independently unsatisfied: dev-window medians 62-65% > 55% and 12/2/0/14 melt-up days >70% outside
@@ -297,6 +310,7 @@ as % of NAV); for mixed stock+option books use `Divide(PositionValue([]), Portfo
 filtered `OptionPositionValue` as a deployment proxy, both are unreliable for that."
 
 **Override scope — deployed despite the following named failures (gates not moved, failures recorded):**
+
 - Gate 2 (fold Sortino floor: certified fold-0 −1.41 < 0.9), Gate 3 (worst certified fold −41.0% < −15%; winner not
   stable), Gate 4 (fold-0 Sortino below B floor) — from certification attempts 1 and 2.
 - Gate 6 (posture): dev-window medians 62–65% > 55%; melt-up days >70% outside the declared regime on OOS segments.
@@ -318,6 +332,7 @@ violation block eliminated, Dec'25 melt-up block remains ~10 days).
 open positions remain and are managed by v16's exits (DTE≤45, TP+100%, OGEP valves — all five names in universe).
 
 **DEPLOY EXECUTED 2026-06-12 (explicit owner "Deploy"):**
+
 1. Clone: v16 `6a2b8434955c28672f64373b` → live `69a7dc7acdb6bf6a4681d36c`; 8 strategies replaced 8 (prior book archived).
 2. **Gate 7 (reproducibility on target): PASS.** Target backtest `6a2b86c8d39b9224ac2d7c32` (2025-05-30→2026-02-05,
    events on) vs chat-book run `6a2b844a955c28672f643773`: `compare_backtests tolerance_bps:0` → identical: true,
@@ -337,6 +352,7 @@ open positions remain and are managed by v16's exits (DTE≤45, TP+100%, OGEP va
    findings to be appended here.
 
 **Deployed book — plain-English rules (MLT v16):**
+
 - Universe: the fixed 20-name watchlist. All entries are long call structures, 150–365 DTE (furthest), first affordable
   rung of [ATM call → ATM/+20% vertical → ATM/+10% vertical → ATM/+3% vertical], 8% of portfolio per name.
 - Core (out of regime only, every 14d): names above their 150d SMA, queued by 126d momentum, budget 28% of NAV.
@@ -345,6 +361,235 @@ open positions remain and are managed by v16's exits (DTE≤45, TP+100%, OGEP va
 - Exits: roll out at DTE ≤ 45; take profit at +100%; out-of-regime posture valves trim winners ≥+50% when
   OptionGrossExposurePercent > 68, ≥+20% above 74, ≥0% above 80. Declared opportunity regime: SPY/max252 < 0.92
   (extreme < 0.82) — matches the audit convention (252d trailing high, 0.92/0.82).
+
+## PHASE 2 (2026-06-12, owner-directed): WF SWEEP → portfolio selection → WF GA → burnout → redeploy decision
+
+Owner: the GA-only certification decision was wrong; do it properly. Plan: (1) walk-forward SWEEP optimization seeded
+from the deployed v16; (2) pick a good portfolio from it; (3) walk-forward GA optimization; measure whether sweep
+selection actually improves validation-set performance vs GA; (4) OOS burnout testing; (5) deploy unless a STRONG
+reason not to (orders still gated on manual approval).
+
+- Honesty note on (4): the lockbox (2026-02-05→2026-06-11) was single-touched by v16 at S2 and the design is now being
+  iterated again → per the frozen rules that window is BURNED as a pristine certifier. No fresher tail exists (it ends
+  at the run date), so burnout testing will use the WF OOS folds as primary evidence and the 2026 window as a
+  disclosed second-touch check, not a clean lockbox.
+- WF sweep config: compiled via `systematic_sweep preview_only + gene_intents` (the WF launcher has no gene_intents
+  path — MCP friction noted). 5 genes seeded at v16's values: TP [75,100,150,200], cadence [10,14,21], budget
+  [22,28,34], rank ROC window [none,63,126,189], OGEP valve [none,60,68,76]; 576 combos, generational, fitness
+  [sortino, percentChange, maxDrawdown]. Compiler caveat: selectors are scope-All (uniform across strategies/sleeves) —
+  winners must be inspected via their materialized portfolios.
+- **CERT #3 launched:** study `6a2b94ecb932c3f68d9289bb` (engineKind Sweep, 4-fold anchored, same calendar as CERT #1/#2,
+  148 units, 5,112.8 tokens). **DEAD ON ARRIVAL** — root optimizer went status ERROR with no error message while the
+  study stayed RUNNING/PENDING (my config had stripped `form` blocks and lacked selectionPolicy/generationPolicy/
+  exhaustiveThreshold). Superseded by #3b.
+- Standalone exec probe `6a2b95f98d968d476f5cc9e7` (systematic_sweep, same gene_intents, 48 evals): RUNNING — proved the
+  server-compiled config shape executes; its persisted config (with form blocks + policies) was lifted verbatim.
+  **Probe's TP gene is tainted** (compiler bug below) — its results are not used for selection.
+- **CERT #3b (the real sweep arm):** study `6a2b96a68d968d476f5ccac1`, root optimizer `6a2b96a68d968d476f5ccad8`
+  confirmed RUNNING. Config = probe's persisted config with the TP gene hand-repaired (proper `Option position P&L % ≥
+75/100/150/200` conditions), fitness [sortino, percentChange, maxDrawdown], 5,117.12 tokens.
+- **CERT #4 (GA comparison arm):** study `6a2b9546b932c3f68d928a26`, GA pop 12 × gen 8, same seed/calendar/fitness as
+  #3b — isolates engine choice for the sweep-vs-GA validation-transfer question. 1,156 units, 2,560.4 tokens.
+
+- **Owner deployed WF-sweep fixes (`8528cafc94`):** generational billing (~6× cheaper), gene_intents accepted by the WF
+  launcher, pre-charge validation, zombie studies now go ERROR. Old in-flight studies keep old billing.
+- **CERT #3c (sweep arm, post-fix):** study `6a2ba29ad60148c60b2ed662`, gene_intents direct (geneWarnings []), 388 units,
+  **859.52 tokens** (vs 5,117 pre-fix — billing fix confirmed). Same 4-fold calendar.
+- **CERT #4 (GA arm) COMPLETE:** per-fold OOS [-8.05%, +40.45%, +248.36%, +276.47%], mean +139.3 / median +144.4,
+  Sortinos [-4.05, 1.53, 4.22, 4.68] (agg 1.60), maxDD worst 43.1%, winnerStable false. Best GA result so far (bigger
+  search + 3-fitness helped: fold-0 damage shrank from -41% to -8%), but still fails the fold-Sortino floor (-4.05 < 0.9),
+  aggregate Sortino (1.60 < 1.9), and majority-folds vs A (F1 +40.45 just misses A's +41.46). Fold-0 selection pathology
+  unchanged in kind: its winner had validation Sortino 7.03 on 3 names / 100% win rate, then went -8% OOS.
+
+### Phase-2 outcome (2026-06-12, ~06:20 UTC)
+
+- **Sweep arm: BLOCKED BY ENGINE BUG.** Four consecutive sweep executions died with root-optimizer status ERROR and an
+  empty error field: CERT #3 (hand config), standalone probe `6a2b95f98d968d476f5cc9e7` (server-compiled, was RUNNING
+  then flipped ERROR), CERT #3b (verbatim-lifted config), and post-fix CERT #3c `6a2ba29ad60148c60b2ed662` (pure
+  gene_intents, root `6a2ba29ad60148c60b2ed669`). #3c's study doc also still says RUNNING (zombie-status fix did not
+  propagate). Conclusion: the sweep EXECUTOR crashes on this options book regardless of config provenance; the
+  sweep-vs-GA validation-transfer experiment cannot be completed until that is fixed. No further retries (owner's rule:
+  don't re-feed an engine fault).
+- **GA arm (CERT #4) delivered the candidate.** Fold-3 winner-equivalent materialized as chatPortfolio
+  **`6a2ba33a229da6a48e74103c`** ("…opt 6a2b9546b932c3f68d928a3d #0", individual 6a2b97256e0c7568ec1d0127; resolved
+  params: selectTopLimit 20, rollTriggerDte 35; train +68.7%/Sortino 1.59 over 2022→2024-09 incl. the bear; validation
+  +73.0%/Sortino 4.81 with 18 names — first non-degenerate winner of the campaign).
+- **Materialization parity caveat (MCP issue):** this book's standalone run over fold-3's exact OOS window returns
+  +249.86%/Sortino 4.63/maxDD 31.2 (`6a2ba3671f9473b74e23c0ae`) vs the fold's certified +276.47% — train/val stats match
+  the fold to all digits but OOS does not, and the fold's selectedIndividualId (…1d0052) differs from the leaderboard
+  row (…1d0127). Materialized books may not carry every resolved gene. All deploy-relevant numbers below are measured
+  DIRECTLY on `…103c`.
+- **Burnout battery on `…103c`** (F0/F1/F2 are in-sample for this genome; last two rows are the honest ones):
+
+| Window                                     | Return                  | Sortino | maxDD | Status                                                           |
+| ------------------------------------------ | ----------------------- | ------- | ----- | ---------------------------------------------------------------- |
+| 2023-05→2024-01 `6a2ba3601f9473b74e23c094` | +116.85%                | 2.98    | 32.7% | in-sample                                                        |
+| 2024-01→2024-09 `6a2ba362229da6a48e74107b` | +143.25%                | 2.81    | 42.2% | in-sample                                                        |
+| 2024-09→2025-05 `6a2ba364229da6a48e741091` | +136.33%                | 2.88    | 38.2% | validation-adjacent                                              |
+| 2025-05→2026-02 `6a2ba3671f9473b74e23c0ae` | **+249.86%**            | 4.63    | 31.2% | **true OOS**                                                     |
+| 2026-02→2026-06 `6a2ba36ad60148c60b2ed74b` | **+111.84%** (SPY +9.2) | 3.53    | 39.1% | **never seen by its optimizer** (2nd touch of window, disclosed) |
+
+- Burnout-window audits: posture median 52.3% ✓, 11 days >70% out-of-regime (the known melt-up residual), breadth 15/20 ✓,
+  top-1 SNDK 33.0% (memory-squeeze concentration on a 4-month window; concentration gate formally applies to fold devs).
+- **Deploy decision:** no STRONG reason against; `…103c` dominates the live v16 on every honest window. Clone attempt
+  blocked by the permission layer pending the owner naming the book explicitly. AWAITING OWNER CONFIRMATION.
+
+- **CERT #3d (post executor-fix sweep):** owner shipped a sweep-executor fix; relaunched with identical gene_intents →
+  study `6a2ba56ed60148c60b2eda8a`, root `6a2ba56fd60148c60b2eda91`, 388 units, 859.52 tokens, geneWarnings [].
+  Outcome: dead (pre-deserialization-fix launch); superseded.
+
+### Sweep-bug isolation ladder → RESOLVED (2026-06-12 ~07:55 CDT)
+
+- DIAG A (trivial SPY stock book): executor fine (12 evals, leaderboard) → bug was options-specific.
+- DIAG B1 (v16, 1 Integer gene, pre-deser-fix): ERROR, 0 evals → template DESERIALIZATION at fault, not gene type.
+- DIAG B2 (post-deser-fix): 3/3 evals ran, then ERROR with empty leaderboard → crash moved to FINALIZE/persist step.
+- DIAG B3 (`6a2c0142306e9cf756ede651`, post-finalize-fix): **COMPLETE, 3/3 evals — first options sweep ever to finish.**
+  Both owner fixes verified end-to-end. Dead artifacts to ignore: CERT #3/#3b/#3c/#3d studies, probe `6a2b95f9…`,
+  B1 `6a2ba62b…`, B2 `6a2bac25…`.
+- **CERT #3e launched (the live sweep arm):** study `6a2c026599fc925d9b7ba685` (root `6a2c026699fc925d9b7ba68c`),
+  engineKind Sweep, 5 gene axes via gene_intents, fitness [sortino, percentChange, maxDrawdown], 4-fold anchored
+  validation on the standard calendar, 388 units, 859.52 tokens. Awaiting fold results; then sweep-vs-GA comparison
+  (GA arm `6a2b9546b932c3f68d928a26`; GA candidate `6a2ba33a229da6a48e74103c` is the deploy bar: OOS +249.9%,
+  2026 burnout +111.8%).
+
+### CERT #3e RESULTS (sweep arm, COMPLETE) + the sweep-vs-GA answer
+
+| Fold | Sweep OOS | Sweep Sortino | Sweep maxDD | names | GA OOS | GA Sortino |
+| ---- | --------- | ------------- | ----------- | ----- | ------ | ---------- |
+| 0 | **+21.27%** | 1.208 | 21.3% | 11 | **-8.05%** | -4.047 |
+| 1 | +101.99% | 7.157 | 15.2% | 13 | +40.45% | 1.527 |
+| 2 | +97.57% | 3.879 | 43.7% | 15 | +248.36% | 4.225 |
+| 3 | +132.41% | 4.159 | 17.6% | 7 | +276.47% | 4.678 |
+| Agg | mean +88.3 / med +99.8 / **min +21.3** | mean 4.10 / **min 1.21** | worst 43.7 | | mean +139.3 / min -8.05 | mean 1.60 / min -4.05 |
+
+**Owner's question answered: YES — sweep selection materially improves validation→OOS transfer.** Deterministic grid
+selection eliminated the degenerate-winner pathology entirely: every fold winner is a broad real book (7–15 names OOS),
+all four folds positive, min-fold Sortino 1.21 vs GA's -4.05. Fold 0 — fatal in all three GA runs — transferred
+faithfully (val Sortino 0.99 → OOS 1.21). GA buys higher peaks (folds 2-3) at the cost of catastrophic fold-0 tails;
+sweep buys consistency. winnerStableAcrossFolds false in both (4 distinct sweep keys — regimes prefer different TP/budget).
+
+### Sweep deploy pick + burnout
+
+The fold-3 winner materialized as **`6a2c044d99fc925d9b7bacf6`**. Before trusting the leaderboard's genome labels we
+pulled the actual book with `get_portfolio` — and they disagreed (the same materialization-parity class of MCP issue
+seen with the GA pick, this time in the metadata rather than the results). What the book actually is:
+
+- **Core sleeve** (SPY ≥ 0.92× 252d-high): fire every ≥14d, rank/select the full 20-name universe by 126-day ROC,
+  limit 20, per-name 22% of buying power, sleeve budget 28% NAV, affordability ladder [ATM call → vert ATM/+20 →
+  +10 → +3] at 150-365 DTE.
+- **Dip sleeve** (SPY < 0.92×high): every ≥7d, select by 252-day ROC, budget 10% NAV.
+- **Crash sleeve** (SPY < 0.82×high): every ≥7d, budget 30% NAV.
+- **Exits:** roll at DTE ≤ 45; take-profit at **+100%** (the leaderboard claimed 150); froth valves intact but at
+  **OGEP 95/110/130** (the display name still says 68/74/80), trimming winners ≥50/≥20/≥0% in-regime. No entry-side
+  OGEP gate — the one genome label that was right.
+
+The discrepancies change nothing downstream — every burnout number was measured on this exact book — but the lesson
+repeats: only the deployable object is the truth.
+
+Burnout, both honest windows:
+
+- F3 standalone `6a2c047199fc925d9b7bad81`: **+137.51%** / Sortino 4.35 / maxDD 17.4 — within noise of the certified
+  +132.4, so this candidate materialized faithfully.
+- 2026 burnout `6a2c047699fc925d9b7bad9c`: **+107.37% vs SPY +9.2** / Sortino 5.99 / maxDD 25.5. Posture: median
+  deployment 0% (sits in cash, then strikes), 30 days >70% out-of-regime during its Mar-Apr burst (same melt-up
+  residual class as v16, lumpier since entries are ungated), and only 4 distinct names in the short window.
+
+### Head-to-head for deploy (both measured directly on the deployable object)
+
+| | Sweep pick `6a2c044d…bacf6` | GA pick `6a2ba33a…103c` |
+| --- | --- | --- |
+| Certification character | all 4 folds positive, min +21.3% | fold-0 negative in every GA run |
+| F3 window | +137.5 / So 4.35 / DD 17.4 | +249.9 / So 4.63 / DD 31.2 |
+| 2026 burnout | +107.4 / So 5.99 / DD 25.5 | +111.8 / So 3.53 / DD 39.1 |
+| Breadth (F3/burnout) | 7 / 4 names (22% budget) | 15 / 15 names |
+| Posture | median 0-low, lumpy >70 bursts | median 52.3, 11 >70-OOR days |
+
+- Full 5-window battery on the sweep pick (first three are in-sample/validation-adjacent for this genome; last two honest):
+  F0 +18.39%/So 1.31/DD 14.1 (`6a2c053499fc925d9b7bafa2`), F1 +37.34%/2.58/12.2 (`6a2c053792d9ca9c8d3b947d`),
+  F2 +122.57%/7.06/11.3 (`6a2c0544306e9cf756edf1ad`), F3 +137.51%/4.35/17.4, 2026 +107.37%/5.99/25.5.
+  Worst drawdown across ALL five windows: 25.5%. The book never breaches even half the 55% DD ceiling anywhere.
+
+Held against the frozen gates, the sweep pick is not a clean pass — nothing in this campaign was. It clears the
+return bar (Gate 2: +88.3% aggregate, beats Baseline A and SPY in 3 of 4 folds), the all-folds-positive test
+(Gate 3), and the drawdown ceiling with room to spare (Gate 5: worst 25.5% vs a 55% limit). It misses on three
+fronts: breadth thins out in recent windows (~7 distinct names in the F3 OOS, ~4 in the 2026 burnout, against a
+≥9 bar that the 2023-24 windows do clear), fold-0's Sortino of 1.21 sits under the 2.37 Baseline-B floor, and no
+single configuration won more than one fold. Posture is a half-miss: the median is fine, but deployment bursts
+past 70% outside the declared regime because entries are ungated.
+
+The breadth miss turned out not to be a miss at all. When asked directly, the owner's intent was eligibility, not
+spread: every name should be *able* to participate, and they do — all 20 compete in the momentum rank at every
+firing. The 4-7 name windows are just persistent 2025-26 leadership winning that rank repeatedly; in 2023-24 the
+same book rotated through 9-10 names. Concentration into leaders is the design working as the owner wants it, so
+the strict per-window distinct-name bar is waived. That removes the main structural objection.
+
+**RECOMMENDATION: deploy the sweep pick `6a2c044d99fc925d9b7bacf6`.** Near-identical burnout return to the GA pick
+at ~2/3 the drawdown and nearly double the Sortino, and it is the only candidate in the campaign whose certification
+produced zero negative folds. What remains true and accepted: ~22% of buying power per position makes single-name
+risk the dominant risk (it is where the 25.5% drawdown comes from), and its weakest regime is chop (fold-0: +21%,
+Sortino 1.21 — positive, but it earns its keep in trends). The GA pick stays on file as the higher-upside,
+higher-risk alternative. Awaiting the owner to name the book for the clone.
+
+### CERT #5 — WF GA seeded from the sweep winner (2026-06-12)
+
+Before deploying, the owner asked for one more arm: a walk-forward GA seeded from the sweep pick itself
+(`6a2c044d99fc925d9b7bacf6`), to see whether GA mutation on top of the sweep-resolved genome finds anything better —
+and which of the two we then want live. Launched with parameters identical to CERT #4 so the seed is the only
+difference: 4-fold anchored, 2022-01-01 → 2026-02-05, pop 12, gen 8, fitness [sortino, return, maxDD], OOS width 252d,
+Day interval. Study `6a2c0858089682c7acb1eb38`, root optimizer `6a2c0859089682c7acb1eb3f`, fold calendar verified
+identical to the frozen one. Cost 2,562.56 tokens.
+
+**Result: the GA degraded the winner in 3 of 4 folds.** OOS per fold: **-1.16%** (So -2.86, 2 names),
+**-0.80%** (So -1.61, 2 names), **+153.06%** (So 3.68, but maxDD 48.0% — at the 55% ceiling's doorstep, 20 names),
+**-26.52%** (So -0.86, 4 names). Aggregate mean +31.1% / median **-0.98%**, three negative folds,
+winnerStableAcrossFolds false. The seed itself certified [+21.3, +102.0, +97.6, +132.4] on the same calendar.
+
+The pathology is the same one documented in CERT #1/#2/#4, now reproduced a third time with the best possible seed:
+folds 0, 1 and 3 selected low-activity mutants with 1-3 name, 100%-win-rate validation windows that promptly went
+negative in OOS — fold-3's pick turned a +33.5%/Sortino 9.6 validation into **-26.5%** true OOS. Mutation found
+validation luck, not alpha; the deterministic grid remains the only optimizer here whose validation performance
+transfers. No candidate from this study merits burnout: the fold-3 winner (the deploy-relevant one) is an OOS loser.
+
+**CERT #5 verdict: do not GA-polish the sweep winner. The deploy candidate stands: `6a2c044d99fc925d9b7bacf6` as-is.**
+
+### DEPLOY #2 — sweep winner to the live book (2026-06-12)
+
+On the owner's word ("let's deploy the sweep winner"), the certified book replaced v16 on the live target:
+
+1. **Clone:** `6a2c044d99fc925d9b7bacf6` → `69a7dc7acdb6bf6a4681d36c` ("Public Portfolio Challenge", live). 9 prior
+   strategies archived (v16 set + old monitor), 8 strategies copied. Open positions (5 LEAP calls) and cash
+   (~$14.7k) untouched. The clone receipt echoed stale pre-sweep display names (the known MCP label issue);
+   post-clone `get_portfolio` shows the correct resolved labels (TP +100%, valves ≥50/≥20/≥0%).
+2. **Gate-7 repro: PASS, bit-exact.** Target backtest `6a2c0b84dd9e9fb055815995` (2025-05-30 → 2026-02-05, $25k,
+   Day, events on): +137.5075% / Sortino 4.3499 / maxDD 17.351 — `compare_backtests` tolerance 0 vs the chat book's
+   F3 run `6a2c047199fc925d9b7bad81`: identical=true, zero delta on every stat, zero tape divergence.
+3. **Monitor re-attached:** weekly LaunchAgent (Monday OR SPY CrossBelow SMA-200, cooldown 1440, gemini-3-flash,
+   maxIterations 15), prompt updated to the new book's mechanics (sleeves 28/10/30, TP +100%, valves 95/110/130,
+   no entry OGEP gate) and adds a single-name concentration flag (any position whose loss would exceed 20% NAV).
+4. **Verified:** live book = 9 strategies (8 certified + monitor), isActive, orders remain manual-approval.
+
+**Gate-8 live parity: PENDING.** After the first live evaluator tick, pull `query_portfolio_events` with
+`include_condition_audit` and compare indicator values against a same-day backtest BEFORE approving any pending
+orders. The campaign's final deliverable is now live: the only candidate whose every certified fold and every test
+window finished positive, deployed with a bit-exact reproduction proof.
+
+### MCP issues observed (phase 2, for the owner)
+
+1. **WF sweep launcher has no gene_intents path** — `run_walk_forward_study engine_kind:sweep` demands a raw SweepConfig;
+   the only way to get a valid one is `systematic_sweep preview_only` + hand-lifting. The launcher should accept
+   gene_intents or at least validate the config shape at submit time.
+2. **Silent death:** an invalid sweep_config passes submit validation, CHARGES tokens (5,112.8), then the root optimizer
+   flips to status ERROR with an empty error field while the study document stays RUNNING with all folds PENDING forever.
+   Two bugs: no config validation at launch, and study status not propagating child-optimizer failure. (CERT #3 is the
+   orphaned instance.)
+3. **gene_intents compiler emits degenerate conditions:** in the probe's compiled config, 3 of 4 take-profit values
+   ('75%/150%/200%') compiled to literal `Constant 1 = Constant 1` ("always") conditions — only '100%' (matching the
+   seed book's existing exit) was real. Any sweep relying on those values silently degenerates. (Hand-repaired for #3b.)
+4. Earlier-phase issues still standing: BuyingPower unreliable as cash/deployment proxy (reads 0.085–0.505 at similar
+   true deployment); filtered OptionPositionValue is per-position, not book-level; CloseOption quantity schema is
+   `{type, count}` but the validator accepts `{type, amount}` / `{count}` shapes that then fail in the Rust engine with
+   BSON "missing field" errors; `create_portfolio_variant` `add` op cannot create a missing key (must replace the parent
+   object); strategy display names go stale after patches (cosmetic but misleading in clone receipts).
 
 ## Archive — superseded day-1/day-2 S0 halt records (kept for history; outcome above supersedes these)
 
@@ -364,10 +609,10 @@ the mandated outcome; gates and checks may not be relaxed mid-campaign. No deplo
 convention, then a full S0 rerun, or (b) a logged owner override naming the S0.2 failure with written justification.
 
 ### Artifacts
+
 - S0.1 trivial book: `6a2b43f4e541b1865c6e31fb`; WF study `6a2b43ff7b36e0f7766b59b9`.
 - Materialized fold-1 winner: `6a2b44517b36e0f7766b5a39`.
 - Fidelity backtests: 05-30 `6a2b44bf8994c9832cda19f5`, 05-29 `6a2b44f07b36e0f7766b5b35`,
   05-28 `6a2b45158994c9832cda1a81`, 05-27 `6a2b4516e541b1865c6e33f2`,
   original-book control `6a2b44607b36e0f7766b5a83`.
 - S0.4 probe book `6a2b44287b36e0f7766b59f2`; backtest `6a2b44317b36e0f7766b59f8` (events expire ~2026-06-14).
-
