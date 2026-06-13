@@ -19,7 +19,7 @@
 
 <br />
 
-**Quick start:** [Connect MCP](#step-3--connect-your-ai-tool) → edit [`profile.json`](profile.json) → `python3 start.py` → **paste the output into a fresh agent chat**
+**Quick start:** [Connect MCP](#step-3--connect-your-ai-tool) → `python3 start.py` (builds your profile + prompt) → **paste `prompt.txt` into a fresh agent chat**
 
 </div>
 
@@ -68,7 +68,7 @@ Connect the NexusTrade MCP server to Cursor, Claude, or any OAuth-capable client
 
 ### One prompt
 
-[`episode-10/BAKEOFF_RUNBOOK.md`](episode-10/BAKEOFF_RUNBOOK.md) is a self-contained agent brief — paste it into a fresh session and let the agent execute. It prescribes *what* must be true, never *how* to achieve it. New here? Take the [fast path](#get-started) instead — edit `profile.json` and paste one prompt.
+[`episode-10/BAKEOFF_RUNBOOK.md`](episode-10/BAKEOFF_RUNBOOK.md) is a self-contained agent brief — paste it into a fresh session and let the agent execute. It prescribes *what* must be true, never *how* to achieve it. New here? Take the [fast path](#get-started) instead — run `python3 start.py` and paste one prompt.
 
 </td>
 <td width="33%" valign="top">
@@ -131,7 +131,7 @@ episode-10/
 
 | File | What it is |
 | --- | --- |
-| [`profile.json`](profile.json) + [`start.py`](start.py) | **Start here (fast path).** Put your watchlist + risk tolerance in `profile.json`, run `python3 start.py`, paste one prompt — the agent builds *you* a personalized strategy. No runbook needed. |
+| [`start.py`](start.py) + [`example_profile.json`](example_profile.json) | **Start here (fast path).** `python3 start.py` walks you through your watchlist + risk tolerance, writes `profile.json` and a `prompt.txt` to paste — the agent builds *you* a personalized strategy. No runbook needed. |
 | [`episode-10/BAKEOFF_RUNBOOK.md`](episode-10/BAKEOFF_RUNBOOK.md) | The agent brief you run — walk-forward validation, lockbox, deploy gates. Paste and execute top to bottom. |
 | [`episode-10/RUNBOOK_OG.md`](episode-10/RUNBOOK_OG.md) | The original Episode-1 runbook, kept for reference (the brief has since expanded). |
 | [`episode-10/snapshots/`](episode-10/snapshots) | Baseline A/B and incumbent seed portfolios the runbook loads via `create_portfolio`. |
@@ -215,13 +215,17 @@ For scripts without OAuth support: expand **Advanced: API Keys** on the Develope
 
 ### Step 4 — Run it
 
-**Fast path — a personalized strategy in one paste.** Edit [`profile.json`](profile.json) with your watchlist, risk tolerance, and asset classes (it ships with mine), then:
+**Fast path — a personalized strategy in one paste.** Run:
 
 ```bash
-python3 start.py        # prints a ready-to-paste prompt
+python3 start.py
 ```
 
-Paste the output into a **fresh** MCP-connected chat. No Python? Just paste `profile.json` itself with one line: *"Build me a personalized strategy from this profile, backtest it out-of-sample, and ask before deploying."* The agent designs a strategy on your names, backtests it, compares it to buy-and-hold, and **asks before risking a dollar**.
+On the first run it walks you through a few questions (defaults come from [`example_profile.json`](example_profile.json) — mine) and writes your **`profile.json`**, then writes your ready-to-paste prompt to **`prompt.txt`**. Open `prompt.txt`, copy it, and paste into a **fresh** MCP-connected chat. Run it again any time after editing `profile.json` to regenerate the prompt.
+
+No Python? Copy `example_profile.json` to `profile.json`, edit it, then paste the JSON into your agent with one line: *"Build me a personalized strategy from this profile, backtest it out-of-sample, and ask before deploying."*
+
+Either way, the agent designs a strategy on your names, backtests it, compares it to buy-and-hold, and **asks before risking a dollar**.
 
 <details>
 <summary><strong><code>profile.json</code> fields</strong></summary>
