@@ -8,7 +8,7 @@
 
 [![Live portfolio](https://img.shields.io/badge/Live-$25K_portfolio-22c55e?style=for-the-badge)](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567)
 [![MCP](https://img.shields.io/badge/Connect-via_MCP-4bc0c0?style=for-the-badge)](https://nexustrade.io/developers)
-[![Runbook](https://img.shields.io/badge/Paste-RUNBOOK.md-c9a84c?style=for-the-badge)](episode-10/RUNBOOK.md)
+[![Runbook](https://img.shields.io/badge/Paste-the_runbook-c9a84c?style=for-the-badge)](episode-10/BAKEOFF_RUNBOOK.md)
 [![No clone](https://img.shields.io/badge/No_code-checkout-64748b?style=for-the-badge)](#get-started)
 
 <br />
@@ -19,7 +19,7 @@
 
 <br />
 
-**Quick start:** [Connect MCP](#step-3--connect-your-ai-tool) · [Paste `episode-10/RUNBOOK.md`](episode-10/RUNBOOK.md) · **Tell the agent to execute top to bottom**
+**Quick start:** [Connect MCP](#step-3--connect-your-ai-tool) → edit [`profile.json`](profile.json) → `python3 start.py` → **paste the output into a fresh agent chat**
 
 </div>
 
@@ -68,7 +68,7 @@ Connect the NexusTrade MCP server to Cursor, Claude, or any OAuth-capable client
 
 ### One prompt
 
-[`episode-10/RUNBOOK.md`](episode-10/RUNBOOK.md) is a self-contained agent brief — paste it into a fresh session and let the agent execute. It prescribes *what* must be true, never *how* to achieve it.
+[`episode-10/BAKEOFF_RUNBOOK.md`](episode-10/BAKEOFF_RUNBOOK.md) is a self-contained agent brief — paste it into a fresh session and let the agent execute. It prescribes *what* must be true, never *how* to achieve it. New here? Take the [fast path](#get-started) instead — edit `profile.json` and paste one prompt.
 
 </td>
 <td width="33%" valign="top">
@@ -116,18 +116,26 @@ Fixed by the runbook: a 20-name watchlist, $25,000 capital, the fold calendar, t
 
 ## What's inside
 
-Each episode is a self-contained folder: the **runbook** to paste, plus the **campaign log** from a live operator run.
+Each episode is a self-contained folder: the **runbook** to paste, plus the **campaign logs** from each operator/agent run.
 
 ```
 episode-10/
-├── RUNBOOK.md        ← paste this into a fresh MCP session
-└── CAMPAIGN_LOG.md   ← raw log from the Episode 10 run (Fable 5, in progress)
+├── BAKEOFF_RUNBOOK.md             ← paste this into a fresh MCP session
+├── RUNBOOK_OG.md                  ← the original (Episode 1) runbook, kept for reference
+├── snapshots/                     ← baseline + incumbent seed portfolios the runbook loads
+├── FABLE_CAMPAIGN.MD              ← operator run log (Fable 5)
+├── CLAUDE_CODE_CAMPAIGN_LOG_*.md  ← agent run log (Claude)
+├── CODEX_CAMPAIGN_LOG_*.md        ← agent run log (Codex)
+└── CURSOR_CAMPAIGN_LOG_*.md       ← agent run log (Cursor)
 ```
 
 | File | What it is |
 | --- | --- |
-| [`episode-10/RUNBOOK.md`](episode-10/RUNBOOK.md) | **Start here.** Full agent brief — walk-forward validation, lockbox, deploy gates. Paste and execute top to bottom. |
-| [`episode-10/CAMPAIGN_LOG.md`](episode-10/CAMPAIGN_LOG.md) | Raw operator log from the live Episode 10 run — S0 engine sanity, gate results, sweep vs GA, artifact IDs. Updated as the campaign progresses. |
+| [`profile.json`](profile.json) + [`start.py`](start.py) | **Start here (fast path).** Put your watchlist + risk tolerance in `profile.json`, run `python3 start.py`, paste one prompt — the agent builds *you* a personalized strategy. No runbook needed. |
+| [`episode-10/BAKEOFF_RUNBOOK.md`](episode-10/BAKEOFF_RUNBOOK.md) | The agent brief you run — walk-forward validation, lockbox, deploy gates. Paste and execute top to bottom. |
+| [`episode-10/RUNBOOK_OG.md`](episode-10/RUNBOOK_OG.md) | The original Episode-1 runbook, kept for reference (the brief has since expanded). |
+| [`episode-10/snapshots/`](episode-10/snapshots) | Baseline A/B and incumbent seed portfolios the runbook loads via `create_portfolio`. |
+| Campaign logs | Per-run logs from each operator/agent: [`FABLE_CAMPAIGN.MD`](episode-10/FABLE_CAMPAIGN.MD), [`CLAUDE_CODE_…`](episode-10/CLAUDE_CODE_CAMPAIGN_LOG_20260613T165226Z.md), [`CODEX_…`](episode-10/CODEX_CAMPAIGN_LOG_20260613T165248Z.md), [`CURSOR_…`](episode-10/CURSOR_CAMPAIGN_LOG_20260613T165224Z.md). |
 
 Future episodes get their own folders (`episode-11/`, …) when the runbook or campaign parameters change materially.
 
@@ -205,13 +213,27 @@ For scripts without OAuth support: expand **Advanced: API Keys** on the Develope
 
 </details>
 
-### Step 4 — Run the challenge
+### Step 4 — Run it
 
-1. Open a **fresh** AI session with NexusTrade MCP connected.
-2. Open [`episode-10/RUNBOOK.md`](episode-10/RUNBOOK.md) and paste the **entire file** into the chat.
-3. Tell the agent: **execute top to bottom. Do not ask clarifying questions.**
+**Fast path — a personalized strategy in one paste.** Edit [`profile.json`](profile.json) with your watchlist, risk tolerance, and asset classes (it ships with mine), then:
 
-Optional: log your run in [`episode-10/CAMPAIGN_LOG.md`](episode-10/CAMPAIGN_LOG.md).
+```bash
+python3 start.py        # prints a ready-to-paste prompt
+```
+
+Paste the output into a **fresh** MCP-connected chat. No Python? Just paste `profile.json` itself with one line: *"Build me a personalized strategy from this profile, backtest it out-of-sample, and ask before deploying."* The agent designs a strategy on your names, backtests it, compares it to buy-and-hold, and **asks before risking a dollar**.
+
+<details>
+<summary><strong><code>profile.json</code> fields</strong></summary>
+
+- `risk_tolerance` — `conservative` · `moderate` · `aggressive`
+- `asset_classes` — any of `stocks`, `crypto`, `options`
+- `watchlist` — the only tickers the agent may trade
+- `capital` — starting USD
+
+</details>
+
+**Full rigor — the runbook.** Want walk-forward validation, a held-out lockbox, and deploy gates? Open [`episode-10/BAKEOFF_RUNBOOK.md`](episode-10/BAKEOFF_RUNBOOK.md), paste the **entire file** into a fresh session, and tell the agent: **execute top to bottom, do not ask clarifying questions.** Log your run alongside the per-agent campaign logs in `episode-10/`.
 
 ---
 

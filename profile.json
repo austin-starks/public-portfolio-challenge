@@ -1,0 +1,30 @@
+{
+  "_instructions": "Edit this with YOUR preferences, then run `python3 start.py` (or just paste this whole file into a fresh NexusTrade MCP agent chat). risk_tolerance = conservative | moderate | aggressive. asset_classes = any of: stocks, crypto, options. watchlist = the only tickers the agent may trade. capital = starting USD.",
+  "name": "Austin's book",
+  "capital": 25000,
+  "risk_tolerance": "aggressive",
+  "asset_classes": ["options"],
+  "watchlist": [
+    "ANET",
+    "DUOL",
+    "HOOD",
+    "LLY",
+    "GS",
+    "META",
+    "TSM",
+    "AVGO",
+    "XOM",
+    "COP",
+    "OSCR",
+    "AMAT",
+    "ADI",
+    "DDOG",
+    "OKTA",
+    "NET",
+    "APP",
+    "GLD",
+    "MU",
+    "SNDK"
+  ],
+  "notes": "Single-name momentum on conviction names; aggressive convex options expression. I don't want to be fully invested all the time — lean in hard when opportunity is rich, sit small when it isn't."
+}
