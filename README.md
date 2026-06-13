@@ -13,7 +13,7 @@
 
 <br />
 
-[![Public Portfolio Challenge — live performance](https://nexustrade-prod.nyc3.cdn.digitaloceanspaces.com/shared-portfolios/og/69a7dc7cf99e43688fcec567/latest-v4.png)](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567)
+[![Public Portfolio Challenge — live performance](https://nexustrade-prod.nyc3.cdn.digitaloceanspaces.com/shared-portfolios/og/69a7dc7cf99e43688fcec567/latest-v4.png?v=2)](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567)
 
 *Live portfolio card — generated from current positions. [Open the full dashboard →](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567)*
 
