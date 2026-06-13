@@ -1,0 +1,79 @@
+{
+  "_comment": "GENERIC EXAMPLE incumbent — a regime-switched momentum LEAP book on the 20-name universe. This is an authored example for copy/paste runs, NOT anyone's private live book. It is a legal certification SEED and an account-independent stand-in for Baseline C's mechanism. Operators may drop their own 'incumbent.json' beside this file to override. The published Baseline-C TARGET STATS the finalist must beat live in the runbook (frozen numbers), independent of this file.",
+  "name": "Incumbent (example) — Regime-switched momentum LEAP",
+  "initialValue": 25000,
+  "strategies": [
+    {
+      "name": "Core deploy — calm regime (SPY >= 0.92 x 252d max), 21d cadence, top 10 ROC126",
+      "condition": {"type": "And", "conditions": [
+        {"type": "Base", "comparison": "greaterThanOrEqual", "lhs": {"type": "DaysSinceLastRebalanceOptionOrder"}, "rhs": {"type": "Value", "value": 21}},
+        {"type": "Base", "comparison": "greaterThanOrEqual", "lhs": {"type": "Price", "targetAsset": {"type": "Stock", "symbol": "SPY"}}, "rhs": {"type": "Multiply", "indicators": [{"type": "Value", "value": 0.92}, {"type": "MaximumPrice", "targetAsset": {"type": "Stock", "symbol": "SPY"}, "window": {"length": 252, "interval": "Day"}}]}}
+      ]},
+      "action": {
+        "type": "RebalanceOption",
+        "universe": {"source": "SPECIFIC_ASSETS", "assets": [
+          {"type": "Stock", "symbol": "ANET"}, {"type": "Stock", "symbol": "DUOL"}, {"type": "Stock", "symbol": "HOOD"}, {"type": "Stock", "symbol": "LLY"}, {"type": "Stock", "symbol": "GS"}, {"type": "Stock", "symbol": "META"}, {"type": "Stock", "symbol": "TSM"}, {"type": "Stock", "symbol": "AVGO"}, {"type": "Stock", "symbol": "XOM"}, {"type": "Stock", "symbol": "COP"}, {"type": "Stock", "symbol": "OSCR"}, {"type": "Stock", "symbol": "AMAT"}, {"type": "Stock", "symbol": "ADI"}, {"type": "Stock", "symbol": "DDOG"}, {"type": "Stock", "symbol": "OKTA"}, {"type": "Stock", "symbol": "NET"}, {"type": "Stock", "symbol": "APP"}, {"type": "Stock", "symbol": "GLD"}, {"type": "Stock", "symbol": "MU"}, {"type": "Stock", "symbol": "SNDK"}
+        ]},
+        "pipeline": [{"type": "SelectTop", "metric": {"type": "PriceRateOfChange", "targetAsset": {"type": "Stock", "symbol": ""}, "window": {"length": 126, "interval": "Day"}}, "limit": 10, "direction": "Highest"}],
+        "weightIndicator": {"type": "PriceRateOfChange", "targetAsset": {"type": "Stock", "symbol": ""}, "window": {"length": 126, "interval": "Day"}},
+        "limit": 10,
+        "perNameAllocation": {"type": "percent of portfolio", "amount": 6},
+        "totalBudget": {"type": "percentOfPortfolioValue", "amount": 55},
+        "structureTemplates": [
+          {"name": "d55 long call", "spreadType": "custom", "legs": [{"optionType": "call", "direction": "long", "expirationSelector": {"minDaysToExpiration": 150, "maxDaysToExpiration": 365, "preference": "middle"}, "strikeSelector": {"distanceType": "percent", "distance": 0}, "greekFilter": {"minDelta": 0.5, "maxDelta": 0.6}}]},
+          {"name": "d55/d40 vertical", "spreadType": "vertical", "legs": [
+            {"optionType": "call", "direction": "long", "expirationSelector": {"minDaysToExpiration": 150, "maxDaysToExpiration": 365, "preference": "middle"}, "strikeSelector": {"distanceType": "percent", "distance": 0}, "greekFilter": {"minDelta": 0.5, "maxDelta": 0.6}},
+            {"optionType": "call", "direction": "short", "expirationSelector": {"minDaysToExpiration": 150, "maxDaysToExpiration": 365, "preference": "middle"}, "strikeSelector": {"distanceType": "percent", "distance": 5}, "greekFilter": {"minDelta": 0.35, "maxDelta": 0.45}}
+          ]},
+          {"name": "d52/d46 vertical (cheapest rung)", "spreadType": "vertical", "legs": [
+            {"optionType": "call", "direction": "long", "expirationSelector": {"minDaysToExpiration": 150, "maxDaysToExpiration": 365, "preference": "middle"}, "strikeSelector": {"distanceType": "percent", "distance": 0}, "greekFilter": {"minDelta": 0.48, "maxDelta": 0.56}},
+            {"optionType": "call", "direction": "short", "expirationSelector": {"minDaysToExpiration": 150, "maxDaysToExpiration": 365, "preference": "middle"}, "strikeSelector": {"distanceType": "percent", "distance": 3}, "greekFilter": {"minDelta": 0.42, "maxDelta": 0.5}}
+          ]}
+        ]
+      }
+    },
+    {
+      "name": "Dip deploy — opportunity regime (SPY < 0.92 x 252d max), 7d cadence, top 12 ROC252",
+      "condition": {"type": "And", "conditions": [
+        {"type": "Base", "comparison": "greaterThanOrEqual", "lhs": {"type": "DaysSinceLastRebalanceOptionOrder"}, "rhs": {"type": "Value", "value": 7}},
+        {"type": "Base", "comparison": "lessThan", "lhs": {"type": "Price", "targetAsset": {"type": "Stock", "symbol": "SPY"}}, "rhs": {"type": "Multiply", "indicators": [{"type": "Value", "value": 0.92}, {"type": "MaximumPrice", "targetAsset": {"type": "Stock", "symbol": "SPY"}, "window": {"length": 252, "interval": "Day"}}]}}
+      ]},
+      "action": {
+        "type": "RebalanceOption",
+        "universe": {"source": "SPECIFIC_ASSETS", "assets": [
+          {"type": "Stock", "symbol": "ANET"}, {"type": "Stock", "symbol": "DUOL"}, {"type": "Stock", "symbol": "HOOD"}, {"type": "Stock", "symbol": "LLY"}, {"type": "Stock", "symbol": "GS"}, {"type": "Stock", "symbol": "META"}, {"type": "Stock", "symbol": "TSM"}, {"type": "Stock", "symbol": "AVGO"}, {"type": "Stock", "symbol": "XOM"}, {"type": "Stock", "symbol": "COP"}, {"type": "Stock", "symbol": "OSCR"}, {"type": "Stock", "symbol": "AMAT"}, {"type": "Stock", "symbol": "ADI"}, {"type": "Stock", "symbol": "DDOG"}, {"type": "Stock", "symbol": "OKTA"}, {"type": "Stock", "symbol": "NET"}, {"type": "Stock", "symbol": "APP"}, {"type": "Stock", "symbol": "GLD"}, {"type": "Stock", "symbol": "MU"}, {"type": "Stock", "symbol": "SNDK"}
+        ]},
+        "pipeline": [{"type": "SelectTop", "metric": {"type": "PriceRateOfChange", "targetAsset": {"type": "Stock", "symbol": ""}, "window": {"length": 252, "interval": "Day"}}, "limit": 12, "direction": "Highest"}],
+        "weightIndicator": {"type": "PriceRateOfChange", "targetAsset": {"type": "Stock", "symbol": ""}, "window": {"length": 252, "interval": "Day"}},
+        "limit": 12,
+        "perNameAllocation": {"type": "percent of portfolio", "amount": 8},
+        "totalBudget": {"type": "percentOfPortfolioValue", "amount": 90},
+        "structureTemplates": [
+          {"name": "d60 long call", "spreadType": "custom", "legs": [{"optionType": "call", "direction": "long", "expirationSelector": {"minDaysToExpiration": 150, "maxDaysToExpiration": 365, "preference": "middle"}, "strikeSelector": {"distanceType": "percent", "distance": -2}, "greekFilter": {"minDelta": 0.55, "maxDelta": 0.68}}]},
+          {"name": "d55/d40 vertical (cheapest rung)", "spreadType": "vertical", "legs": [
+            {"optionType": "call", "direction": "long", "expirationSelector": {"minDaysToExpiration": 150, "maxDaysToExpiration": 365, "preference": "middle"}, "strikeSelector": {"distanceType": "percent", "distance": 0}, "greekFilter": {"minDelta": 0.5, "maxDelta": 0.6}},
+            {"optionType": "call", "direction": "short", "expirationSelector": {"minDaysToExpiration": 150, "maxDaysToExpiration": 365, "preference": "middle"}, "strikeSelector": {"distanceType": "percent", "distance": 4}, "greekFilter": {"minDelta": 0.38, "maxDelta": 0.48}}
+          ]}
+        ]
+      }
+    },
+    {
+      "name": "Take profit +100%",
+      "condition": {"type": "Base", "comparison": "greaterThanOrEqual", "lhs": {"type": "OptionPositionCount"}, "rhs": {"type": "Value", "value": 1}},
+      "action": {"type": "CloseOption", "triggers": [{"type": "pnl", "minPnlPercent": 100}]}
+    },
+    {
+      "name": "Roll/exit at DTE <= 45",
+      "condition": {"type": "Base", "comparison": "greaterThanOrEqual", "lhs": {"type": "OptionPositionCount"}, "rhs": {"type": "Value", "value": 1}},
+      "action": {"type": "CloseOption", "triggers": [{"type": "dte", "maxDte": 45}]}
+    },
+    {
+      "name": "Posture valve — trim winners when gross exposure > 75% (calm regime)",
+      "condition": {"type": "And", "conditions": [
+        {"type": "Base", "comparison": "greaterThan", "lhs": {"type": "OptionGrossExposurePercent"}, "rhs": {"type": "Value", "value": 75}},
+        {"type": "Base", "comparison": "greaterThanOrEqual", "lhs": {"type": "Price", "targetAsset": {"type": "Stock", "symbol": "SPY"}}, "rhs": {"type": "Multiply", "indicators": [{"type": "Value", "value": 0.92}, {"type": "MaximumPrice", "targetAsset": {"type": "Stock", "symbol": "SPY"}, "window": {"length": 252, "interval": "Day"}}]}}
+      ]},
+      "action": {"type": "CloseOption", "triggers": [{"type": "pnl", "minPnlPercent": 30}]}
+    }
+  ]
+}

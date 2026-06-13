@@ -1,0 +1,34 @@
+{
+  "_comment": "Baseline A — equal-weight buy-once-hold of the 20-name universe. A RETURN bar only (never a Sortino bar). Load this exact payload via create_portfolio at S1. Account-independent; do not edit.",
+  "name": "Baseline A — Equity B&H 20 names",
+  "initialValue": 25000,
+  "strategies": [
+    {
+      "name": "EW buy-once-hold 20 names",
+      "condition": {
+        "type": "Base",
+        "comparison": "equal",
+        "lhs": {
+          "type": "SumOrderQuantity",
+          "targetAssets": [
+            {"type": "Stock", "symbol": "ANET"}, {"type": "Stock", "symbol": "DUOL"}, {"type": "Stock", "symbol": "HOOD"}, {"type": "Stock", "symbol": "LLY"}, {"type": "Stock", "symbol": "GS"}, {"type": "Stock", "symbol": "META"}, {"type": "Stock", "symbol": "TSM"}, {"type": "Stock", "symbol": "AVGO"}, {"type": "Stock", "symbol": "XOM"}, {"type": "Stock", "symbol": "COP"}, {"type": "Stock", "symbol": "OSCR"}, {"type": "Stock", "symbol": "AMAT"}, {"type": "Stock", "symbol": "ADI"}, {"type": "Stock", "symbol": "DDOG"}, {"type": "Stock", "symbol": "OKTA"}, {"type": "Stock", "symbol": "NET"}, {"type": "Stock", "symbol": "APP"}, {"type": "Stock", "symbol": "GLD"}, {"type": "Stock", "symbol": "MU"}, {"type": "Stock", "symbol": "SNDK"}
+          ],
+          "side": "Buy",
+          "orderStatus": "Filled"
+        },
+        "rhs": {"type": "Value", "value": 0}
+      },
+      "action": {
+        "type": "DynamicRebalance",
+        "universe": {
+          "source": "SPECIFIC_ASSETS",
+          "assets": [
+            {"type": "Stock", "symbol": "ANET"}, {"type": "Stock", "symbol": "DUOL"}, {"type": "Stock", "symbol": "HOOD"}, {"type": "Stock", "symbol": "LLY"}, {"type": "Stock", "symbol": "GS"}, {"type": "Stock", "symbol": "META"}, {"type": "Stock", "symbol": "TSM"}, {"type": "Stock", "symbol": "AVGO"}, {"type": "Stock", "symbol": "XOM"}, {"type": "Stock", "symbol": "COP"}, {"type": "Stock", "symbol": "OSCR"}, {"type": "Stock", "symbol": "AMAT"}, {"type": "Stock", "symbol": "ADI"}, {"type": "Stock", "symbol": "DDOG"}, {"type": "Stock", "symbol": "OKTA"}, {"type": "Stock", "symbol": "NET"}, {"type": "Stock", "symbol": "APP"}, {"type": "Stock", "symbol": "GLD"}, {"type": "Stock", "symbol": "MU"}, {"type": "Stock", "symbol": "SNDK"}
+          ]
+        },
+        "pipeline": [],
+        "weightIndicator": {"type": "Value", "value": 1}
+      }
+    }
+  ]
+}

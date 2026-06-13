@@ -1,0 +1,44 @@
+{
+  "_comment": "Baseline B — naive LEAP ladder, fully deployed (95% budget), all 20 names, 14-day cadence. A return bar AND a Sortino bar in folds where it has >=9/20 breadth. Load this exact payload via create_portfolio at S1. If S1.5 finds the gates jointly unsatisfiable, rebuild this with totalBudget derated until its own median daily deployment <= 55% (posture-matched B). Account-independent; do not edit the structure.",
+  "name": "Baseline B — Naive LEAP ladder",
+  "initialValue": 25000,
+  "strategies": [
+    {
+      "name": "LEAP ladder rebalance (14d cadence)",
+      "condition": {"type": "Base", "comparison": "greaterThanOrEqual", "lhs": {"type": "DaysSinceLastRebalanceOptionOrder"}, "rhs": {"type": "Value", "value": 14}},
+      "action": {
+        "type": "RebalanceOption",
+        "universe": {"source": "SPECIFIC_ASSETS", "assets": [
+          {"type": "Stock", "symbol": "ANET"}, {"type": "Stock", "symbol": "DUOL"}, {"type": "Stock", "symbol": "HOOD"}, {"type": "Stock", "symbol": "LLY"}, {"type": "Stock", "symbol": "GS"}, {"type": "Stock", "symbol": "META"}, {"type": "Stock", "symbol": "TSM"}, {"type": "Stock", "symbol": "AVGO"}, {"type": "Stock", "symbol": "XOM"}, {"type": "Stock", "symbol": "COP"}, {"type": "Stock", "symbol": "OSCR"}, {"type": "Stock", "symbol": "AMAT"}, {"type": "Stock", "symbol": "ADI"}, {"type": "Stock", "symbol": "DDOG"}, {"type": "Stock", "symbol": "OKTA"}, {"type": "Stock", "symbol": "NET"}, {"type": "Stock", "symbol": "APP"}, {"type": "Stock", "symbol": "GLD"}, {"type": "Stock", "symbol": "MU"}, {"type": "Stock", "symbol": "SNDK"}
+        ]},
+        "pipeline": [],
+        "weightIndicator": {"type": "Value", "value": 1},
+        "limit": 20,
+        "perNameAllocation": {"type": "percent of portfolio", "amount": 8},
+        "totalBudget": {"type": "percentOfPortfolioValue", "amount": 95},
+        "structureTemplates": [
+          {"name": "d50 long call", "spreadType": "custom", "legs": [
+            {"optionType": "call", "direction": "long", "expirationSelector": {"minDaysToExpiration": 180, "maxDaysToExpiration": 365, "preference": "middle"}, "strikeSelector": {"distanceType": "percent", "distance": 0}, "greekFilter": {"minDelta": 0.45, "maxDelta": 0.55}}
+          ]},
+          {"name": "d55/d25 vertical", "spreadType": "vertical", "legs": [
+            {"optionType": "call", "direction": "long", "expirationSelector": {"minDaysToExpiration": 180, "maxDaysToExpiration": 365, "preference": "middle"}, "strikeSelector": {"distanceType": "percent", "distance": -3}, "greekFilter": {"minDelta": 0.5, "maxDelta": 0.6}},
+            {"optionType": "call", "direction": "short", "expirationSelector": {"minDaysToExpiration": 180, "maxDaysToExpiration": 365, "preference": "middle"}, "strikeSelector": {"distanceType": "percent", "distance": 10}, "greekFilter": {"minDelta": 0.2, "maxDelta": 0.3}}
+          ]},
+          {"name": "d55/d40 vertical", "spreadType": "vertical", "legs": [
+            {"optionType": "call", "direction": "long", "expirationSelector": {"minDaysToExpiration": 180, "maxDaysToExpiration": 365, "preference": "middle"}, "strikeSelector": {"distanceType": "percent", "distance": -3}, "greekFilter": {"minDelta": 0.5, "maxDelta": 0.6}},
+            {"optionType": "call", "direction": "short", "expirationSelector": {"minDaysToExpiration": 180, "maxDaysToExpiration": 365, "preference": "middle"}, "strikeSelector": {"distanceType": "percent", "distance": 4}, "greekFilter": {"minDelta": 0.35, "maxDelta": 0.45}}
+          ]},
+          {"name": "d50/d42 vertical (cheapest rung — never remove)", "spreadType": "vertical", "legs": [
+            {"optionType": "call", "direction": "long", "expirationSelector": {"minDaysToExpiration": 180, "maxDaysToExpiration": 365, "preference": "middle"}, "strikeSelector": {"distanceType": "percent", "distance": 0}, "greekFilter": {"minDelta": 0.45, "maxDelta": 0.55}},
+            {"optionType": "call", "direction": "short", "expirationSelector": {"minDaysToExpiration": 180, "maxDaysToExpiration": 365, "preference": "middle"}, "strikeSelector": {"distanceType": "percent", "distance": 3}, "greekFilter": {"minDelta": 0.38, "maxDelta": 0.47}}
+          ]}
+        ]
+      }
+    },
+    {
+      "name": "Exit at DTE <= 45",
+      "condition": {"type": "Base", "comparison": "greaterThanOrEqual", "lhs": {"type": "OptionPositionCount"}, "rhs": {"type": "Value", "value": 1}},
+      "action": {"type": "CloseOption", "triggers": [{"type": "dte", "maxDte": 45}]}
+    }
+  ]
+}
